@@ -3,10 +3,10 @@ import { db } from '../../db'
 import { eq, and } from 'drizzle-orm'
 import { applications, companies, users } from '../../db/schema'
 import { listings } from '../../db/schema'
+import { companyMembers } from '../../db/schema'
 import { authenticateAccessToken , AuthenticateRequest} from '../../middleware/authenticateAccessToken'
 import {z} from 'zod'
-import { compare } from 'bcryptjs'
-import app from '../../app'
+
 
 
 const router = Router()
@@ -33,10 +33,10 @@ router.get('/', authenticateAccessToken,async (req: AuthenticateRequest, res) =>
             return res.status(403).json({message: 'You do not have permission'})
         }
 
-        const company = await db.query.companies.findFirst({where: eq(companies.userId, currentUser.userId)})
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, currentUser.userId)})
 
-        if(!company) {
-            return res.status(404).json({message: 'Company not found'})
+        if(!companyMember) {
+            return res.status(404).json({message: 'You are not a company member'})
         }
 
         const result = await db.select().from(applications).innerJoin(
@@ -48,7 +48,7 @@ router.get('/', authenticateAccessToken,async (req: AuthenticateRequest, res) =>
                             eq(listings.companyId, companies.companyId)
                         )
                         .where(
-                            eq(companies.companyId, company.companyId)
+                            eq(companies.companyId, companyMember.companyId)
                         )
         if(result.length === 0){
             return res.status(404).json({message: 'No applications found'})
@@ -77,10 +77,10 @@ router.get('/:id', authenticateAccessToken, async (req: AuthenticateRequest, res
             return res.status(404).json({message: 'User not found'})
         }
 
-        const company = await db.query.companies.findFirst({where: eq(companies.userId, currentUser.userId)})
+        const companyMember = await db.query.companies.findFirst({where: eq(companyMembers.userId, currentUser.userId)})
 
-        if(!company) {
-            return res.status(404).json({message: 'Company not found '})
+        if(!companyMember) {
+            return res.status(404).json({message: 'Company mebership not found '})
         }
 
         const result = await db.select().from(applications).innerJoin(
@@ -93,7 +93,7 @@ router.get('/:id', authenticateAccessToken, async (req: AuthenticateRequest, res
         )
         .where(
             and(
-                eq(companies.companyId, company.companyId),
+                eq(companies.companyId, companyMember.companyId),
                 eq(applications.applicationId, applicationId)
             )
         )
@@ -182,10 +182,10 @@ router.patch('/:id/review', authenticateAccessToken, async (req:AuthenticateRequ
             return res.status(403).json({message: 'You are not allowed '})
         }
 
-        const company = await db.query.companies.findFirst({where: eq(companies.userId, user.userId)})
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, user.userId)})
 
-        if(!company){
-            return res.status(404).json({message: 'Company not found'})
+        if(!companyMember){
+            return res.status(404).json({message: 'Company membership not found'})
         }
 
         const applicationId = req.params.id as string
@@ -201,7 +201,7 @@ router.patch('/:id/review', authenticateAccessToken, async (req:AuthenticateRequ
             )
             .where(
                 and(
-                    eq(companies.companyId, company.companyId),
+                    eq(companies.companyId, companyMember.companyId),
                     eq(applications.applicationId, applicationId),
                     eq(applications.status, 'PENDING')
                 )
@@ -247,10 +247,10 @@ router.patch('/:id/approve', authenticateAccessToken, async (req:AuthenticateReq
             return res.status(403).json({message: 'Not allowed'})
         }
 
-        const company = await db.query.companies.findFirst({where: eq(companies.userId, user.userId)})
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, user.userId)})
 
-        if(!company){
-            return res.status(404).json({message: 'Company not found'})
+        if(!companyMember){
+            return res.status(404).json({message: 'Company Membership not found'})
         }
 
         const applicationId = req.params.id as string
@@ -266,7 +266,7 @@ router.patch('/:id/approve', authenticateAccessToken, async (req:AuthenticateReq
             )
             .where(
                 and(
-                    eq(companies.companyId, company.companyId),
+                    eq(companies.companyId, companyMember.companyId),
                     eq(applications.applicationId, applicationId),
                     eq(applications.status, 'REVIEWING')
                 )
@@ -307,11 +307,12 @@ router.patch('/:id/rejected', authenticateAccessToken, async (req:AuthenticateRe
             return res.status(403).json({message: 'You do not have permission'})
         }
 
-        const company = await db.query.companies.findFirst({where: eq(companies.userId, user.userId)})
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, user.userId)})
 
-        if(!company){
-            return res.status(404).json({message: 'Company not found'})
+        if(!companyMember){
+            return res.status(404).json({message: 'Company Membership not found'})
         }
+        
 
         const applicationId = req.params.id as string
 
@@ -327,7 +328,7 @@ router.patch('/:id/rejected', authenticateAccessToken, async (req:AuthenticateRe
             .where(
                 and(
                     eq(applications.applicationId, applicationId),
-                    eq(companies.companyId, company.companyId),
+                    eq(companies.companyId, companyMember.companyId),
                     eq(applications.status, 'REVIEWING')
                 )
             )
