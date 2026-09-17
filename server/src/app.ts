@@ -3,6 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
 import authRouter from './modules/auth/auth.routes.js'
+import applicationRouter from './modules/applications/application.routes.js'
 
 const app = express()
 
@@ -24,5 +25,5 @@ app.get('/api/health', (req, res) => {
 })
 
 app.use('/api/auth', authRouter )
-
+app.use('/api/application', applicationRouter)
 export default app
