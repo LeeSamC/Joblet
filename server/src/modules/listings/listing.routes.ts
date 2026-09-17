@@ -90,3 +90,4 @@ router.post('/', authenticateAccessToken, async (req: AuthenticateRequest, res) 
     }
 })
 
+export default router
