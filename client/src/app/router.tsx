@@ -4,6 +4,8 @@ import AppLayout from '../layouts/AppLayout'
 
 import PublicRoute from "../components/PublicRoute";
 
+import DashboardPage from "../pages/DashboardPage";
+
 
 
 export const router = 
