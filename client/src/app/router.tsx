@@ -6,6 +6,8 @@ import PublicRoute from "../components/PublicRoute";
 
 import DashboardPage from "../pages/DashboardPage";
 
+import LoginPage from '../modules/auth/pages/LoginPage'
+import RegistrationPage from "../modules/auth/pages/RegistrationPage";
 
 
 export const router = 
@@ -17,23 +19,23 @@ export const router =
                     path: '/login',
                     element: <LoginPage />
                 },
-
                 {
-                    element: <AppLayout/>,
-                    
-                    children: [
-                        {
-                            path: '/',
-                            element: <DashboardPage/>
-
-                        }
-                    ]
+                    path: '/register',
+                    element: <RegistrationPage />
                 }
 
-            ],
+            ]
+            
+        },
 
-            
-            
+        {
+            element: <AppLayout/>,
+            children: [
+                {
+                    path: '/',
+                    element: <DashboardPage />
+                }
+            ]
         },
 
         
