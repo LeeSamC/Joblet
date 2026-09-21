@@ -1,26 +1,27 @@
 import {Navigate, Outlet} from 'react-router-dom'
 
-import {useAuthStore} from '../stores/auth.store'
+import { useAuthStore } from '../stores/auth.store'
 
-export default function PublicRoute() {
+export default function ProtectedRoute() {
     const user = useAuthStore(state => state.user)
     const isInitialized = useAuthStore(state => state.isInitialized)
 
     if(!isInitialized){
-        return (
+        return(
             <div className='flex min-h-screen items-center justify-center'>
-                <p>Loading</p>
+                <p>Loading...</p>
             </div>
         )
     }
 
-    if(user){
+    if(!user){
         return(
-            <Navigate to='/'
-            replace
+            <Navigate
+                to="/login"
+                replace
             />
         )
     }
 
-    return <Outlet/>
+    return <Outlet />
 }
