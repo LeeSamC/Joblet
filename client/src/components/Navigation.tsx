@@ -20,11 +20,7 @@ export default function Navigation(){
         }
     ];
 
-    if(!user){
-        return null
-    }
-
-    const avatarLetter = user.firstName.charAt(0).toUpperCase();
+    const avatarLetter = user?.firstName.charAt(0).toUpperCase();
 
 
     return (
@@ -59,48 +55,71 @@ export default function Navigation(){
                     })}
                 </div>
 
-                <div className="relative ml-auto">
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="flex items-center gap-2 rounded-full p-1 hover:bg-gray-100"
-                    >
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
-                            {avatarLetter}
-                        </div>
-
-                        <ChevronDown
-                            size={16}
-                            className={`transition-transform ${
-                                isOpen ? 'rotate-180' : ''
-                            }`}
-                        />
-                    </button>
-
-                    {isOpen && (
-                        <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-white py-2 shadow-lg">
+                <div className="ml-auto">
+                    {!user ? (
+                        <div className="flex items-center gap-3">
                             <NavLink
-                                to="/profile"
-                                onClick={() => setIsOpen(false)}
-                                className='flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100'
+                                to="/login"
+                                className="rounded-lg px-4 py-2 text-sm font-medium hover:bg-gray-100"
                             >
-                                <User size={18} />
-                                Profile
+                                Login
                             </NavLink>
 
-                            <button
-                                onClick={() => {
-                                    setIsOpen(false);
-                                    logout();
-                                }}
-
-                                className="flex w-full items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            <NavLink
+                                to="/register"
+                                className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
                             >
-                                <LogOut size={18} />
-                                Logout
+                                Register
+                            </NavLink>
+                        </div>
+                    ): (
+                        <div className="relative">
+                            <button
+                                type="button"
+                                onClick={() => setIsOpen(!isOpen)}
+                                className="flex items-center gap-2 rounded-full p-1 hover:bg-gray-100"
+                            >
+                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
+                                    {avatarLetter}
+                                </div>
+
+                                <ChevronDown
+                                    size={16}
+                                    className={`transition-transform ${
+                                        isOpen ? "rotate-180" : ""
+                                    }`}
+                                />
                             </button>
+
+                            {isOpen && (
+                                <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-white py-2 shadow-lg">
+                                    <NavLink
+                                        to="/profile"
+                                        onClick={() => setIsOpen(false)}
+                                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                        <User size={18} />
+                                        Profile
+                                        
+                                    </NavLink>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {setIsOpen(false); logout();}}
+                                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                                    >
+                                        <LogOut size={18} />
+                                        Logout
+
+                                    </button>
+
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
+
+                
             </div>
         </nav>
     )
