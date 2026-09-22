@@ -104,12 +104,14 @@ export const useAuthStore = create<AuthState>(
                         })
 
                         try{
-                            await api<{
+                            const result = await api<{
                                 user: User
                             }>('/auth/register', {
                                 method: 'POST',
                                 body: data
                             })
+
+                            set({user: result.user})
                         }finally{
                             set({isLoading: false})
                         }
