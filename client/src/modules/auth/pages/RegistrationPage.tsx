@@ -10,7 +10,10 @@ const registrationSchema = z.object({
     lastName: z.string().min(3, 'Last name is required'),
     username: z.string().min(3, 'Username is required'),
     password: z.string().min(8, 'Password must have atleast 8 characters'),
-    confirmPassword: z.string()
+    confirmPassword: z.string(),
+    role: z.enum(['JOBSEEKER', 'JOBPROVIDER'], {
+        message: 'Please select a role'
+    })
 })
 .refine(
     data => data.password === data.confirmPassword, {
@@ -31,9 +34,12 @@ export default function RegistrationPage() {
 
     const [error, setError] = useState('')
 
-    const {register, handleSubmit, formState: {errors}} = useForm<RegisterForm>({
-        resolver: zodResolver(registrationSchema)
+    const {register, handleSubmit, setValue, watch, formState: {errors}} = useForm<RegisterForm>({
+        resolver: zodResolver(registrationSchema),
+        defaultValues: {role: 'JOBSEEKER'}
     })
+
+    const selectedRole = watch('role')
 
     async function onSubmit(data: RegisterForm){
         setError('')
@@ -171,6 +177,46 @@ export default function RegistrationPage() {
                         )}
 
                     </div>
+
+                    <div>
+                        <div className='w-full flex gap-4'>
+                            <button
+                                type='button'
+                                onClick={() => setValue('role', 'JOBSEEKER')}
+                                className={`flex-1 rounded-lg border px-4 py-3 font-medium transition
+                                    ${
+                                        selectedRole === 'JOBSEEKER'
+                                        ? 'border-gray-900 bg-gray-900 text-white'
+                                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-900'
+                                    }
+                                `}
+                            >
+                                Job Seeker
+                            </button>
+
+                            <button
+                                type='button'
+                                onClick={() => setValue('role', 'JOBPROVIDER')}
+                                className={`flex-1 rounded-lg border px-4 py-3 font-medium transition
+                                    ${
+                                        selectedRole === 'JOBPROVIDER'
+                                        ? 'border-gray-900 bg-gray-900 text-white'
+                                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-900'
+                                    }
+                                `}
+                            >
+                                Job Provider
+                            </button>
+                        </div>
+
+                        {errors.role && (
+                            <p className='mt-1 text-sm text-red-600'>
+                                {errors.role.message }
+                            </p>
+                        )}
+                    </div>
+
+                    
 
                     <button
                         type='submit'
