@@ -24,7 +24,8 @@ const registerSchema = z.object({
     lastName: z.string().min(3).max(100),
     username: z.string().min(3).max(100),
     password: z.string().min(8),
-    confirmPassword: z.string()
+    confirmPassword: z.string(),
+    role: z.enum(['JOBSEEKER', 'JOBPROVIDER'])
 }).refine(
     data => data.password === data.confirmPassword, {
         message: 'Passwords dont match'
@@ -149,12 +150,14 @@ router.post('/register', async (req, res) => {
             firstName: data.firstName,
             lastName: data.lastName,
             username: data.username,
-            passwordHash: passwordHash
+            passwordHash: passwordHash,
+            role: data.role
         }).returning({
             userId: users.userId,
             firstName: users.firstName,
             lastName: users.lastName,
-            username: users.username
+            username: users.username,
+            role: users.role
         })
 
         const accessToken = issueAccessToken(newUser.userId)
