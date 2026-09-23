@@ -22,7 +22,7 @@ app.use(cookieParser())
 app.get('/api/health', (req, res) => {
     res.json({
         sucess: true,
-        message: 'Joblet APIs is running'
+        message: 'Joblet APIs are running'
     })
 })
 
