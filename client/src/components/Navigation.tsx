@@ -24,7 +24,7 @@ export default function Navigation(){
 
 
     return (
-        <nav className="w-full border-b bg-white">
+        <nav className="sticky top-0 z-50 w-full border-b bg-white">
             <div className="mx-auto flex h-16 max-w-7xl items-center px-6">
                 <div className="mr-10 text-xl font-bold">
                     Joblet
