@@ -4,7 +4,7 @@ import {Home, User, LogOut, ChevronDown} from 'lucide-react'
 
 import { useAuthStore } from "../stores/auth.store";
 
-export default function Navigation(){
+    export default function Navigation(){
 
     const user = useAuthStore((state) => state.user)
     const logout = useAuthStore((state) => state.logout)
