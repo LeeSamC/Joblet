@@ -2,9 +2,15 @@ import { useState } from "react";
 
 import { useAuthStore } from "../stores/auth.store";
 
+import { useListings } from "../modules/listings/hooks/useListing";
+import ListingCard from "../modules/listings/cards/listings.card";
+
 export default function DashboardPage(){
 
     const user = useAuthStore(state => state.user)
+
+    const {data, isLoading, isError} = useListings()
+
 
 
     return(
@@ -47,6 +53,36 @@ export default function DashboardPage(){
                             Discover the latest jobs available
                         </p>
                     </div>
+
+                    {isLoading ? (
+                        <div className="py-10 text-center">
+                            <p className="text-gray-500">
+                                Loading listings...
+                            </p>
+                        </div>
+                    ): isError ? (
+                        <div className="py-10 text-center">
+                            <p className="text-red-500">
+                                Failed to load listings
+                            </p>
+                        </div>
+                    ): data?.listings.length === 0 ? (
+                        <div className=" py-10 text-center">
+                            <p className="text-gray-500">
+                                No listings available right now
+                            </p>
+                        </div>
+                    ): (
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {data?.listings.map((listing) => (
+                                <ListingCard
+                                    key={listing.listingId}
+                                    listing={listing}
+                                />
+                            ))}
+                        </div>
+                    )}
+
                 </div>
             </section>
         </main>
