@@ -5,13 +5,14 @@ import CompanyLayout from "../layouts/CompanyLayout";
 
 import PublicRoute from "../components/PublicRoute";
 import ProtectedRoute from "../components/ProtectedRoute";
+import RoleRoute from "../components/RoleRoute";
 
 import DashboardPage from "../pages/DashboardPage";
 import CompanyDashboardPage from "../pages/CompanyDashboardPage";
 
 import LoginPage from '../modules/auth/pages/LoginPage'
 import RegistrationPage from "../modules/auth/pages/RegistrationPage";
-import RoleRoute from "../components/RoleRoute";
+
 
 
 export const router = 
