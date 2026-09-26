@@ -16,6 +16,20 @@ type Member = {
     username: string
 }
 
+export type requestStatus = 
+    | 'PENDING'
+    | 'APPROVED'
+    | 'DECLINED'
+
+type Request = {
+    requestId: string
+    userId: string
+    companyId: string
+    status: requestStatus
+    createdAt: string
+    updatedAt: string
+}
+
 export async function getCompanies(){
     return api<{
         companies: Company[]
@@ -37,7 +51,6 @@ export async function getUserCompany(){
 
 export async function addCompany(
     data: {
-        ownerId: string
         name: string
         description: string
     }
@@ -47,6 +60,40 @@ export async function addCompany(
     }>('/company', {
         method: 'POST',
         body: data
+    })
+}
+
+export async function addRequest(id: string){
+    return api<{
+        request: Request
+    }>(`/company/${id}/request`, {
+        method: 'POST'
+    })
+}
+
+export async function getRequest(id: string){
+    return api<{
+        requests: Request[]
+    }>(`/company/${id}/joinRequest`)
+}
+
+export async function approveRequest(id: string, requestId: string){
+    return api<{
+        member: {
+            companyId: string;
+            userId: string
+        }
+        request: Request
+    }>(`/company/${id}/joinRequest/${requestId}/approve`, {
+        method: 'POST'
+    })
+}
+
+export async function declineRequest(id: string, requestId: string){
+    return api<{
+        result: Request
+    }>(`/company/${id}/joinReqest/${requestId}/decline`, {
+        method: 'POST'
     })
 }
 
