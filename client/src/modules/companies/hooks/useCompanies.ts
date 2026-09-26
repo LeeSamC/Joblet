@@ -1,38 +1,45 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
-import { getCompanies, getUserCompany, addCompany } from '../companies.api'
-
+import { getCompanies, getCompanyMembers, getUserCompany, addCompany, addRequest, getRequest, approveRequest, declineRequest } from '../companies.api'
 
 export const CompanyKeys = {
     all: ['company'] as const,
 
-    lists: () =>
+    lists: () => 
         [...CompanyKeys.all, 'list'] as const,
 
-    details: () =>
-        [...CompanyKeys.all, 'detail'] as const,
+    members: () =>
+        [...CompanyKeys.all, 'members'] as const,
 
-    detail: (id: string) =>
-        [...CompanyKeys.details(), id] as const 
+    userCompany: () => 
+        [...CompanyKeys.all, 'user'] as const,
+
+    requests: (id: string) => 
+        [...CompanyKeys.all, 'requests', id] as const
     
 }
 
-export function useCompanies() {
+export function useGetCompanies() {
     return useQuery({
         queryKey: CompanyKeys.lists(),
-
         queryFn: getCompanies
+    })
+}
+
+export function useGetCompanyMembers() {
+    return useQuery({
+        queryKey: CompanyKeys.members(),
+        queryFn: getCompanyMembers
     })
 }
 
 export function useGetUserCompany() {
     return useQuery({
-        queryKey: CompanyKeys.details(),
-
-        queryFn: getUserCompany
+        queryKey: CompanyKeys.userCompany(),
+        queryFn: getUserCompany,
+        retry: false
     })
 }
-
 
 export function useAddCompany() {
     const queryClient = useQueryClient()
@@ -42,7 +49,76 @@ export function useAddCompany() {
 
         onSuccess: () => {
             queryClient.invalidateQueries({
+                queryKey: CompanyKeys.userCompany()
+            })
+
+            queryClient.invalidateQueries({
                 queryKey: CompanyKeys.lists()
+            })
+        }
+    })
+}
+
+export function useAddRequest() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: addRequest,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: CompanyKeys.userCompany()
+            })
+        }
+    })
+}
+
+export function useGetRequest(id: string) {
+    return useQuery({
+        queryKey: CompanyKeys.requests(id),
+        queryFn: () => getRequest(id)
+    })
+}
+
+export function useApproveRequest() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({
+            companyId,
+            requestId
+        }: {
+            companyId: string
+            requestId: string
+        }) => approveRequest(companyId, requestId),
+
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: CompanyKeys.requests(variables.companyId)
+            })
+
+            queryClient.invalidateQueries({
+                queryKey:CompanyKeys.members()
+            })
+        }
+    })
+}
+
+export function useDeclineRequest() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: ({
+            companyId,
+            requestId
+        }: {
+            companyId: string
+            requestId: string
+        }) => declineRequest(companyId, requestId),
+
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: CompanyKeys.requests(variables.companyId)
             })
         }
     })
