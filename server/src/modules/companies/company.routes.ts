@@ -179,7 +179,7 @@ router.post('/:id/request', authenticateAccessToken, async(req: AuthenticateRequ
             return res.status(404).json({message: 'User not found'})
         }
 
-        if(user.role !== 'JOBSEEKER'){
+        if(user.role !== 'JOBPROVIDER'){
             return res.status(403).json({message: 'You do not have permissions'})
         }
 
@@ -321,6 +321,60 @@ router.post('/:id/joinRequest/:requestId/approve', authenticateAccessToken, asyn
         console.error(error)
 
         return res.status(500).json({message: 'Failed to approve request'})
+    }
+})
+
+router.post('/:id/joinRequest/:requestId/declined', authenticateAccessToken, async (req:AuthenticateRequest, res) => {
+    try{
+        if(!req.user){
+            return res.status(401).json({message: 'Authorization required'})
+        }
+
+        const user = await db.query.users.findFirst({where: eq(users.userId, req.user.userId)})
+
+        if(!user){
+            return res.status(404).json({message: 'User not found'})
+        }
+
+        const companyId = req.params.id as string
+        const requestId = req.params.requestId as string
+
+        const company = await db.query.companies.findFirst({where:
+            and(
+                eq(companies.companyId, companyId),
+                eq(companies.ownerId, user.userId)
+            )
+        })
+
+        if(!company){
+            return res.status(403).json({message: 'You do not own this company'})
+        }
+        
+        const request = await db.query.companyJoinRequest.findFirst({where: 
+            and(
+                eq(companyJoinRequest.requestId, requestId),
+                eq(companyJoinRequest.companyId, companyId),
+                eq(companyJoinRequest.status, 'PENDING')
+            )
+        })
+
+        if(!request){
+            return res.status(404).json({message: 'Request not found'})
+        }
+
+        const [updateRequest] = await db.update(companyJoinRequest).set({
+            status: 'DECLINED',
+            updatedAt: new Date()
+        })
+        .where(
+            eq(companyJoinRequest.requestId, requestId)
+        ).returning()
+
+        return res.status(200).json(updateRequest)
+    }catch (error){
+        console.error(error)
+
+        return res.status(500).json({message: 'Unable to decline request'})
     }
 })
 
