@@ -5,7 +5,10 @@ export default function CompanyLayout() {
     return (
         <div className='min-h-screen bg-gray-100'>
             <CompanyNavigation />
-            <Outlet/>
+            <main>
+                <Outlet/>
+            </main>
+            
         </div>
     )
 }
