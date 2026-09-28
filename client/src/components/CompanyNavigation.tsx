@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import { NavLink } from 'react-router-dom'
-import {ChevronDown, Home, User, LogOut} from 'lucide-react'
+import {ChevronDown, Home, User, LogOut, BriefcaseBusiness, Users} from 'lucide-react'
 
 import { useAuthStore } from '../stores/auth.store'
 
@@ -10,11 +10,27 @@ export default function CompanyNavigation() {
 
     const [isOpen, setIsOpen] = useState(false)
 
+    if(!user){
+        return null
+    }
+
+
+
     const links = [
         {
             to: '/companyDash',
             label: 'Home',
             icon: Home
+        },
+        {
+            to: '/company/listings',
+            label: 'Listings',
+            icon: BriefcaseBusiness
+        },
+        {
+            to: '/company/members',
+            label: 'Members',
+            icon: Users
         }
     ]
 
