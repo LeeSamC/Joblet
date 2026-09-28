@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom'
 
-import { Building2, Users, ArrowRight, Clock, User } from 'lucide-react'
+import { Building2, Users, ArrowRight} from 'lucide-react'
 
 import { useGetCompanies, useGetUserCompany } from '../modules/companies/hooks/useCompanies'
 
@@ -8,8 +8,6 @@ import { useGetCompanies, useGetUserCompany } from '../modules/companies/hooks/u
 export default function companyDashboard(){
 
     const {data: userCompany, isLoading, isError} = useGetUserCompany()
-
-    const {data: companies} = useGetCompanies
 
     if(isLoading){
         return (
