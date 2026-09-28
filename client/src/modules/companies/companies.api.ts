@@ -24,6 +24,9 @@ export type requestStatus =
 type Request = {
     requestId: string
     userId: string
+    firstName: string
+    lastName: string
+    username: string
     companyId: string
     status: requestStatus
     createdAt: string
