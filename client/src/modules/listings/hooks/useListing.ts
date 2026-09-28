@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
-import { getListing } from '../listings.api'
+import { getListings, getListing, addListing } from '../listings.api'
 
 export const ListingKeys = {
     all: ['listings'] as const,
@@ -18,6 +18,28 @@ export const ListingKeys = {
 export function useListings() {
     return useQuery({
         queryKey: ListingKeys.lists(),
-        queryFn: getListing
+        queryFn: getListings
+    })
+}
+
+export function useListing(id: string){
+    return useQuery({
+        queryKey:ListingKeys.detail(id),
+        queryFn: () => getListing(id),
+        enabled: Boolean(id)
+    })
+}
+
+export function useAddListing(){
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: addListing,
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ListingKeys.lists()
+            })
+        }
     })
 }
