@@ -14,8 +14,11 @@ export const CompanyKeys = {
     userCompany: () => 
         [...CompanyKeys.all, 'user'] as const,
 
-    requests: (id: string) => 
-        [...CompanyKeys.all, 'requests', id] as const
+    requests: () => 
+        [...CompanyKeys.all, 'requests'] as const,
+
+    request: (companyId: string) =>
+        [...CompanyKeys.requests(), companyId] as const
     
 }
 
@@ -67,7 +70,7 @@ export function useAddRequest() {
 
         onSuccess: () => {
             queryClient.invalidateQueries({
-                queryKey: CompanyKeys.userCompany()
+                queryKey: CompanyKeys.requests()
             })
         }
     })
@@ -75,8 +78,9 @@ export function useAddRequest() {
 
 export function useGetRequest(id: string) {
     return useQuery({
-        queryKey: CompanyKeys.requests(id),
-        queryFn: () => getRequest(id)
+        queryKey: CompanyKeys.request(id),
+        queryFn: () => getRequest(id),
+        enabled: Boolean(id)
     })
 }
 
@@ -94,7 +98,7 @@ export function useApproveRequest() {
 
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: CompanyKeys.requests(variables.companyId)
+                queryKey: CompanyKeys.request(variables.companyId)
             })
 
             queryClient.invalidateQueries({
@@ -118,7 +122,7 @@ export function useDeclineRequest() {
 
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
-                queryKey: CompanyKeys.requests(variables.companyId)
+                queryKey: CompanyKeys.request(variables.companyId)
             })
         }
     })
