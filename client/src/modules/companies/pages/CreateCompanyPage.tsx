@@ -23,7 +23,7 @@ export default function CreateCompanyPage() {
                 description
             })
 
-            navigate('/company');
+            navigate('/companyDash');
         }catch (error){
             setError(
                 error instanceof Error
