@@ -119,7 +119,8 @@ router.post('/login', async (req, res) => {
                 userId: user.userId,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                username: user.username
+                username: user.username,
+                role: user.role
             }
         })
     }catch (error){
