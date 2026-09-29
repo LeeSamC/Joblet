@@ -19,7 +19,17 @@ const listingSchema = z.object({
 
 router.get('/', async(req, res) => {
     try{
-        const allListings = await db.select().from(listings)
+        const allListings = await db.select({
+            listingId: listings.listingId,
+            companyId: listings.companyId,
+            companyName: companies.name,
+            name: listings.name,
+            description: listings.description
+        }).from(listings)
+        .innerJoin(
+            companies,
+            eq(listings.companyId, companies.companyId)
+        )
         
         if(allListings.length === 0){
             return res.status(404).json({message:'No listings found'})
