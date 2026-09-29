@@ -2,7 +2,7 @@ import {Link} from 'react-router-dom'
 
 import { Building2, Users, ArrowRight} from 'lucide-react'
 
-import { useGetCompanies, useGetUserCompany } from '../modules/companies/hooks/useCompanies'
+import {useGetUserCompany } from '../modules/companies/hooks/useCompanies'
 
 
 export default function companyDashboard(){
