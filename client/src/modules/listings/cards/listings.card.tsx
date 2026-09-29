@@ -16,7 +16,7 @@ export default function ListingCard({listing}: ListingCardProps){
                 </h3>
 
                 <p className="mt-2 text-sm text-gray-900">
-                    Company ID: {listing.companyId}
+                    Company: {listing.companyName}
                 </p>
             </div>
             
