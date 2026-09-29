@@ -6,6 +6,6 @@ export const companies = pgTable('companies', {
     companyId: uuid('company_id').defaultRandom().primaryKey(),
     ownerId: uuid('owner_id').notNull().references(() => users.userId, {onDelete: 'cascade'}),
     name: varchar('name', {length: 50}).notNull(),
-    description: varchar('description', {length: 100}),
+    description: varchar('description', {length: 1000}),
     createdAt: timestamp('created_at').defaultNow().notNull()
 })
