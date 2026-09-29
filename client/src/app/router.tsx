@@ -16,7 +16,8 @@ import CreateCompanyPage from "../modules/companies/pages/CreateCompanyPage";
 import CompanyMembersPage from "../modules/companies/pages/CompanyMembersPage";
 import JoinRequestPage from "../modules/companies/pages/JoinRequestPage";
 import CompaniesPage from "../modules/companies/pages/CompaniesPage";
-
+import CompanyListingsPage from "../modules/companies/pages/CompanyListingsPage";
+import CreateListingsPage from "../modules/companies/pages/CreateListingsPage";
 
 
 export const router = 
@@ -61,6 +62,11 @@ export const router =
                             path: '/company/create',
                             element: <CreateCompanyPage/>
                         },
+
+                        {
+                            path: '/company/listings',
+                            element: <CompanyListingsPage />
+                        },
                         {
                             path: '/company/browse',
                             element: <CompaniesPage/>
@@ -72,6 +78,10 @@ export const router =
                         {
                             path: '/company/members',
                             element: <CompanyMembersPage/>
+                        },
+                        {
+                            path: '/company/listings/create',
+                            element: <CreateListingsPage/>
                         }
                     ]
                 }
