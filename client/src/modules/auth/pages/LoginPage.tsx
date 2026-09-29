@@ -4,6 +4,7 @@ import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import { useAuthStore } from '../../../stores/auth.store'
 import {zodResolver} from '@hookform/resolvers/zod'
+import { useNavigate } from 'react-router-dom'
 
 const loginSchema = z.object({
     username: z.string().min(3, 'Username is required'),
@@ -14,6 +15,8 @@ const loginSchema = z.object({
 type loginForm = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
+
+    const navigate = useNavigate()
 
     const login = useAuthStore(state => state.login)
     const isLoading = useAuthStore(state => state.isLoading)
@@ -28,7 +31,13 @@ export default function LoginPage() {
         setError('')
 
         try{
-            await login(data.username, data.password)
+            const user = await login(data.username, data.password)
+
+            if(user?.role === 'JOBPROVIDER'){
+                navigate('/companyDash')
+            }else{
+                navigate('/')
+            }
         }catch (error) {
             setError(
                 error instanceof Error
