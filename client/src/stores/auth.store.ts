@@ -27,7 +27,7 @@ type AuthState = {
     login: (
         username: string,
         password: string,
-    ) => Promise<void>
+    ) => Promise<User>
 
     register: (data: {
         firstName: string
@@ -35,7 +35,8 @@ type AuthState = {
         username: string
         password: string
         confirmPassword: string
-    }) => Promise<void>
+        role: string
+    }) => Promise<User>
 
     logout: () => Promise<void>
 }
@@ -88,7 +89,7 @@ export const useAuthStore = create<AuthState>(
                         })
 
                         set({user: result.user})
-
+                        return result.user
 
                     }finally{
                         set({
@@ -112,6 +113,8 @@ export const useAuthStore = create<AuthState>(
                             })
 
                             set({user: result.user})
+
+                            return result.user
                         }finally{
                             set({isLoading: false})
                         }
