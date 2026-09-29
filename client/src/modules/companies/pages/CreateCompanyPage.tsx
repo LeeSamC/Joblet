@@ -96,7 +96,7 @@ export default function CreateCompanyPage() {
                             <button
                                 type='button'
                                 onClick={() => 
-                                    navigate('/company')
+                                    navigate('/companyDash')
                                 }
                                 className='rounded-lg border px-5 py-3 font-medium'
                             >
