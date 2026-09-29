@@ -4,6 +4,7 @@ export type listingType = {
     listingId: string
     companyId: string
     name: string
+    companyName: string
     description: string
 }
 
