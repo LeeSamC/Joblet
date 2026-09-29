@@ -45,8 +45,13 @@ export default function RegistrationPage() {
         setError('')
 
         try{
-            await registerUser(data)
-            navigate('/')
+            const user  = await registerUser(data)
+            if(user?.role === 'JOBPROVIDER'){
+                navigate('/companyDash')
+            }else{
+                navigate('/')
+            }
+            
         }catch (error){
             setError(
                 error instanceof Error
