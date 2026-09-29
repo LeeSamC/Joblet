@@ -41,7 +41,7 @@ export default function CompanyMembersPage() {
                             >
 
                                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-900 font-semibold text-white">
-                                    {member.firstName.charAt(0).toUpperCase()}
+                                    {member.firstName?.charAt(0).toUpperCase()}
                                 </div>
 
                                 <div>
