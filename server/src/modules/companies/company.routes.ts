@@ -14,7 +14,7 @@ const router = Router()
 
 const companySchema = z.object({
     name: z.string().min(10).max(50),
-    description: z.string().min(100).max(500)
+    description: z.string().min(10).max(1000)
 })
 
 
@@ -56,17 +56,18 @@ router.get('/companyMembers', authenticateAccessToken, async (req:AuthenticateRe
             return res.status(403).json({message: 'No permission '})
         }
 
-        const members = await db.select().from(companyMembers)
+        const members = await db.select({
+            userId: users.userId,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            username: users.username
+        }).from(companyMembers)
             .innerJoin(
                 users,
                 eq(companyMembers.userId, users.userId)
             )
-            .innerJoin(
-                companies,
-                eq(companyMembers.companyId, companies.companyId)
-            )
             .where(
-                eq(companies.companyId, companyMember.companyId)
+                eq(companyMembers.companyId, companyMember.companyId)
             )
         
         if(members.length === 0){
