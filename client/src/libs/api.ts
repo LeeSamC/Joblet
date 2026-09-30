@@ -59,7 +59,13 @@ async function refreshAccessToken(): Promise<boolean> {
 export async function api<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
     let response = await makeRequest(endpoint, options)
 
-    if(response.status === 401) {
+    const isAuthEndpoint =
+        endpoint === '/auth/login' ||
+        endpoint === '/auth/register' ||
+        endpoint === '/auth/refresh' ||
+        endpoint === '/auth/logout'
+
+    if(response.status === 401 && !isAuthEndpoint) {
         const refreshed = await refreshAccessToken()
         if(refreshed){
             response = await makeRequest(
