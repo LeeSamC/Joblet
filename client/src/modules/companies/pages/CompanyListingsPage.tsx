@@ -2,11 +2,11 @@ import {Link} from "react-router-dom"
 
 import { BriefcaseBusiness, Plus, ArrowRight } from "lucide-react"
 
-import { useListings } from "../../listings/hooks/useListing"
+import { useGetCompanyListings } from "../hooks/useCompanies"
 
 export default function CompanyListingsPage() {
 
-    const {data, isLoading, isError} = useListings()
+    const {data, isLoading, isError} = useGetCompanyListings()
 
     return (
         <main className="min-h-screen bg-gray-50 p-6">
@@ -51,7 +51,7 @@ export default function CompanyListingsPage() {
                     </div>
                 )}
 
-                {!isLoading && !isError && data?.listings.length === 0 && (
+                {!isLoading && !isError && data?.companyListings.length === 0 && (
                     <div className="rounded-2xl border bg-white p-12 text-center">
                         <BriefcaseBusiness size={48} className="mx-auto text-gray-400" />
 
@@ -73,9 +73,9 @@ export default function CompanyListingsPage() {
                     </div>
                 )}
 
-                {!isLoading && !isError && data?.listings && data.listings.length > 0 && (
+                {!isLoading && !isError && data?.companyListings && data.companyListings.length > 0 && (
                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {data.listings.map((listing) => (
+                        {data.companyListings.map((listing) => (
                             <div
                                 key={listing.listingId}
                                 className="rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md" 
