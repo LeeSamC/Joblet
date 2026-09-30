@@ -9,8 +9,6 @@ import { eq } from 'drizzle-orm'
 import {z} from 'zod'
 import { authenticateRefreshToken } from '../../middleware/authenticateRefreshToken'
 import { authenticateAccessToken, AuthenticateRequest } from '../../middleware/authenticateAccessToken'
-import { ref } from 'process'
-import { clear } from 'console'
 
 const router = Router()
 
@@ -265,7 +263,8 @@ router.get('/me', authenticateAccessToken, async (req: AuthenticateRequest, res)
             userId: users.userId,
             firstName: users.firstName,
             lastName: users.lastName,
-            username: users.username
+            username: users.username,
+            role: users.role
         }).from(users)
         .where(eq(users.userId, req.user.userId))
         .limit(1)
