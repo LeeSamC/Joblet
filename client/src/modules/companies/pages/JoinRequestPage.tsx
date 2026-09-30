@@ -8,7 +8,7 @@ export default function JoinRequestPage() {
 
     const company = userCompany?.company
 
-    const {data, isLoading} = useGetRequest(company?.companyId ?? "")
+    const {data, isLoading} = useGetRequest()
 
     const approve = useApproveRequest()
 
@@ -46,9 +46,9 @@ export default function JoinRequestPage() {
                 </div>
 
                 {requests.length === 0 && (
-                    <div className='rounded-xl border bg-white p-10 text-gray-400'>
+                    <div className='rounded-xl flex flex-col items-center justify-center border bg-white p-10 text-gray-400'>
                         <Clock
-                            className='mx-auto text-gray-400'
+                            className=' text-gray-400'
                             size={32}
                         />
 
