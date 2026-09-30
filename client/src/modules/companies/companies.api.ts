@@ -8,6 +8,14 @@ type Company = {
     createdAt: string
 }
 
+type Listing = {
+    listingId: string
+    companyId: string
+    name: string
+    description: string
+    createdAt: string
+}
+
 
 type Member = {
     userId: string
@@ -48,7 +56,7 @@ export async function getCompanyMembers() {
 
 export async function getUserCompany(){
     return api<{
-        company: Company
+        company: Company | null
     }>('/company/userCompany')
 }
 
@@ -74,10 +82,16 @@ export async function addRequest(id: string){
     })
 }
 
-export async function getRequest(id: string){
+export async function getRequest(){
     return api<{
         requests: Request[]
-    }>(`/company/${id}/joinRequest`)
+    }>(`/company/joinRequest`)
+}
+
+export async function getCompanyListings(){
+    return api<{
+        companyListings: Listing[]
+    }>('/company/listings')
 }
 
 export async function approveRequest(id: string, requestId: string){
@@ -95,7 +109,7 @@ export async function approveRequest(id: string, requestId: string){
 export async function declineRequest(id: string, requestId: string){
     return api<{
         result: Request
-    }>(`/company/${id}/joinReqest/${requestId}/decline`, {
+    }>(`/company/${id}/joinRequest/${requestId}/decline`, {
         method: 'POST'
     })
 }
