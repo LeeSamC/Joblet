@@ -22,16 +22,7 @@ export default function CompanyNavigation() {
             label: 'Home',
             icon: Home
         },
-        {
-            to: '/company/listings',
-            label: 'Listings',
-            icon: BriefcaseBusiness
-        },
-        {
-            to: '/company/members',
-            label: 'Members',
-            icon: Users
-        }
+      
     ]
 
     const avatarLetter = user?.firstName.charAt(0).toUpperCase();
