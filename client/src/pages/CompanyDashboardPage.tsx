@@ -2,12 +2,28 @@ import {Link} from 'react-router-dom'
 
 import { Building2, Users, ArrowRight} from 'lucide-react'
 
+import { useAuthStore } from '../stores/auth.store'
+
 import {useGetUserCompany } from '../modules/companies/hooks/useCompanies'
 
+import { useGetCompanyListings } from '../modules/companies/hooks/useCompanies'
 
-export default function companyDashboard(){
+import { useGetCompanyMembers, useGetRequest  } from '../modules/companies/hooks/useCompanies'
+
+
+export default function CompanyDashboardPage(){
+
+    const user = useAuthStore(state => state.user)
 
     const {data: userCompany, isLoading, isError} = useGetUserCompany()
+
+    const {data: listings} = useGetCompanyListings()
+
+    const {data: members} = useGetCompanyMembers()
+
+    const {data:request} = useGetRequest()
+
+    const isOwner = userCompany?.company?.ownerId === user?.userId
 
     if(isLoading){
         return (
@@ -20,96 +36,17 @@ export default function companyDashboard(){
         )
     }
 
-    if(userCompany?.company){
-        const company = userCompany.company
-
+    if(isError) {
         return(
-            <main className='min-h-screen bg-gray-50 p-6'>
-                <div className='mx-auto max-w-7xl'>
-                    <div className='mb-8'>
-                        <div className='flex items-center gap-3'>
-                            <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-black text-white'>
-                                <Building2 size={24}/>
-                            </div>
-
-                            <div>
-                                <h1 className='text-3xl font-bold'>
-                                    {company.name}
-                                </h1>
-
-                                <p className='text-gray-500'>
-                                    Company Dashboard
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='grid gap-6 md:grid-cols-3'>
-                        <DashboardCard
-                            title = 'Listings'
-                            value = '0'
-                            description = 'Active job listings'
-                        />
-
-                        <DashboardCard
-                            title = 'Members'
-                            value = '0'
-                            description = 'Company members' 
-                        />
-
-                        <DashboardCard
-                            title = 'Applications'
-                            value = '0'
-                            description = 'Job applications' 
-                        />
-                    </div>
-
-                    <div className='mt-8 grid gap-6 md:grid-cols-2'>
-                        <Link
-                            to="/company/listings"
-                            className='rounded-xl border bg-white p-6 transition hover:translate-y-1 hover:shadow-md'
-                        >
-                            <div className='flex items-center justify-between'>
-
-                                <div>
-                                    <h2 className='font-semibold'>
-                                        Manage Listings
-                                    </h2>
-
-                                    <p className='mt-2 text-sm text-gray-500'>
-                                        Create and manage your job listings
-                                    </p>
-                                </div>
-
-                                <ArrowRight size={20} />
-
-                            </div>
-                        </Link>
-                        
-                        <Link
-                            to="/company/members"
-                            className='rounded-xl border bg-white p-6 transition hover:-translate-y-1 hover:shadow-md'
-                        >
-                            <div className='flex items-center justify-between'>
-                                <div>
-                                    <h1 className='font-semibold'>
-                                        Company Members
-                                    </h1>
-
-                                    <p className='mt-1 text-sm text-gray-500'>
-                                        Manage people in your company
-                                    </p>
-                                </div>
-                                <Users size={20}/>
-                            </div>
-                        </Link>
-                    </div>
-                </div>
+            <main className='flex min-h-[80vh] items-center justify-center'>
+                <p className='text-red-500'>
+                    Failed to load company information
+                </p>
             </main>
         )
     }
 
-    if(isError){
+    if(!userCompany?.company){
         return (
             <main className='min-h-screen bg-gray-50 p-6'>
                 <div className='mx-auto max-w-5xl'>
@@ -173,8 +110,119 @@ export default function companyDashboard(){
             </main>
         )
     }
+    const company = userCompany.company
 
-    return null
+    return(
+            <main className='min-h-screen bg-gray-50 p-6'>
+                <div className='mx-auto max-w-7xl'>
+                    <div className='mb-8'>
+                        <div className='flex items-center gap-3'>
+                            <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-black text-white'>
+                                <Building2 size={24}/>
+                            </div>
+
+                            <div>
+                                <h1 className='text-3xl font-bold'>
+                                    {company.name}
+                                </h1>
+
+                                <p className='text-gray-500'>
+                                    Company Dashboard
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='grid gap-6 md:grid-cols-3'>
+                        <DashboardCard
+                            title = 'Listings'
+                            value = {listings?.companyListings.length ?? 0}
+                            description = 'Active job listings'
+                        />
+
+                        <DashboardCard
+                            title = 'Members'
+                            value = {members?.companyMembers.length ?? 0}
+                            description = 'Company members' 
+                        />
+
+                        <DashboardCard
+                            title = 'Applications'
+                            value = {request?.requests.length ?? 0}
+                            description = 'Job applications' 
+                        />
+                    </div>
+
+                    <div className='mt-8 grid gap-6 md:grid-cols-2'>
+                        <Link
+                            to="/company/listings"
+                            className='rounded-xl border bg-white p-6 transition hover:translate-y-1 hover:shadow-md'
+                        >
+                            <div className='flex items-center justify-between'>
+
+                                <div>
+                                    <h2 className='font-semibold'>
+                                        Manage Listings
+                                    </h2>
+
+                                    <p className='mt-2 text-sm text-gray-500'>
+                                        Create and manage your job listings
+                                    </p>
+                                </div>
+
+                                <ArrowRight size={20} />
+
+                            </div>
+                        </Link>
+                        
+                        <Link
+                            to="/company/members"
+                            className='rounded-xl border bg-white p-6 transition hover:-translate-y-1 hover:shadow-md'
+                        >
+                            <div className='flex items-center justify-between'>
+                                <div>
+                                    <h1 className='font-semibold'>
+                                        Company Members
+                                    </h1>
+
+                                    <p className='mt-1 text-sm text-gray-500'>
+                                        Manage people in your company
+                                    </p>
+                                </div>
+                                <Users size={20}/>
+                            </div>
+                        </Link>
+
+                    
+
+                        {isOwner && (
+                            <Link
+                                to="/company/requests"
+                                className='rounded-xl border bg-white p-6 transition hover:-translate-y-1 hover:shadow-md'
+                            >
+                                <div className='flex items-center justify-between'>
+                                    <div>
+                                        <h1 className='font-semibold'>
+                                            View Applicants
+                                        </h1>
+
+                                        <p className='mt-1 text-sm text-gray-500'>
+                                            Manage company join request
+                                        </p>
+
+                                    </div>
+                                    <Users size={20}/>
+                                </div>
+                                
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            </main>
+        )
+
+
+
 }
 
 function DashboardCard({
@@ -183,7 +231,7 @@ function DashboardCard({
     description
 }: {
     title: string
-    value: string
+    value: number
     description: string
 }) {
     return (
