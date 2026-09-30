@@ -2,13 +2,12 @@ import {Router} from 'express'
 
 import { db } from '../../db'
 import { eq, and} from 'drizzle-orm'
-import { companies, companyMembers, companyJoinRequest} from '../../db/schema'
+import { companies, companyMembers, companyJoinRequest, listings} from '../../db/schema'
 import { users } from '../../db/schema'
 
 import { z} from 'zod'
 
 import { AuthenticateRequest, authenticateAccessToken } from '../../middleware/authenticateAccessToken'
-import { es } from 'zod/v4/locales'
 
 const router = Router()
 
@@ -101,13 +100,13 @@ router.get('/userCompany', authenticateAccessToken, async (req:AuthenticateReque
         const companyMember = await db.query.companyMembers.findFirst({where:eq(companyMembers.userId, user.userId)})
 
         if(!companyMember){
-            return res.status(404).json({message: 'Company membership not found'})
+            return res.json({company: null})
         }
 
         const company = await db.query.companies.findFirst({where: eq(companies.companyId, companyMember.companyId)})
 
         if(!company){
-            return res.status(404).json({message: 'Company not found'})
+            return res.json({message: 'Company not found'})
         }
 
         return res.status(200).json({company})
@@ -115,6 +114,38 @@ router.get('/userCompany', authenticateAccessToken, async (req:AuthenticateReque
         console.error(error)
 
         return res.status(500).json({message: 'Failed to fetch user company'})
+    }
+})
+
+router.get('/listings', authenticateAccessToken, async(req: AuthenticateRequest, res) => {
+    try{
+        if(!req.user){
+            return res.status(401).json({message: 'Authentication required'})
+        }
+
+        const user = await db.query.users.findFirst({where: eq(users.userId, req.user.userId)})
+
+        if(!user){
+            return res.status(404).json({message: 'User not found'})
+        }
+
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, user.userId)})
+
+        if(!companyMember){
+            return res.status(403).json({message: 'Permission required'})
+        }
+
+        const company = await db.query.companies.findFirst({where: eq(companies.companyId, companyMember.companyId)})
+
+
+        const companyListings = await db.select().from(listings)
+            .where(eq(listings.companyId, company?.companyId as string))
+        
+        return res.status(200).json({companyListings})
+    }catch (error){
+        console.error(error)
+
+        return res.status(500).json({message: 'Failed to fetch company listings'})
     }
 })
 
@@ -223,7 +254,7 @@ router.post('/:id/request', authenticateAccessToken, async(req: AuthenticateRequ
     }
 })
 
-router.get('/:id/joinRequest', authenticateAccessToken, async (req: AuthenticateRequest, res) => {
+router.get('/joinRequest', authenticateAccessToken, async (req:AuthenticateRequest, res) => {
     try{
         if(!req.user){
             return res.status(401).json({message: 'Authentication required'})
@@ -235,35 +266,36 @@ router.get('/:id/joinRequest', authenticateAccessToken, async (req: Authenticate
             return res.status(404).json({message: 'User not found'})
         }
 
-        const companyId = req.params.id as string
-
-        const company = await db.query.companies.findFirst({where: 
-            and(
-                eq(companies.companyId, companyId),
-                eq(companies.ownerId, user.userId)
-            )
-        })
+        const company = await db.query.companies.findFirst({where: eq(companies.ownerId, user.userId)})
 
         if(!company){
-            return res.status(403).json({message: 'Company not found or user is not owner'})
+            return res.status(403).json({message: 'You do not have permission for this'})
         }
 
-        const requests = await db.select().from(companyJoinRequest).innerJoin(
-            users,
-            eq(companyJoinRequest.userId, users.userId)
-        )
-        .where(
-            and(
-                eq(companyJoinRequest.companyId, companyId),
-                eq(companyJoinRequest.status, 'PENDING')
+        const requests = await db.select({
+            requestId: companyJoinRequest.requestId,
+            companyId: companyJoinRequest.companyId,
+            userId: companyJoinRequest.userId,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            username: users.username,
+            createdAt: companyJoinRequest.createdAt
+
+        }).from(companyJoinRequest)
+            .innerJoin(
+                users,
+                eq(companyJoinRequest.userId, users.userId)
             )
-        )
+            .where(and(
+                eq(companyJoinRequest.companyId, company.companyId),
+                eq(companyJoinRequest.status, 'PENDING')
+            ))
 
         return res.status(200).json({requests})
     }catch (error){
         console.error(error)
 
-        return res.status(500).json({message: 'Failed to fetch request'})
+        return res.status(500).json({message: 'Failed to fetch company join request'})
     }
 })
 
@@ -325,7 +357,7 @@ router.post('/:id/joinRequest/:requestId/approve', authenticateAccessToken, asyn
     }
 })
 
-router.post('/:id/joinRequest/:requestId/declined', authenticateAccessToken, async (req:AuthenticateRequest, res) => {
+router.post('/:id/joinRequest/:requestId/decline', authenticateAccessToken, async (req:AuthenticateRequest, res) => {
     try{
         if(!req.user){
             return res.status(401).json({message: 'Authorization required'})
