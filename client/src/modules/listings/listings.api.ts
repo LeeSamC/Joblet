@@ -6,6 +6,7 @@ export type listingType = {
     name: string
     companyName: string
     description: string
+    createdAt: string
 }
 
 export async function getListings(){
