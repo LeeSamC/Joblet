@@ -19,6 +19,8 @@ import CompaniesPage from "../modules/companies/pages/CompaniesPage";
 import CompanyListingsPage from "../modules/companies/pages/CompanyListingsPage";
 import CreateListingsPage from "../modules/companies/pages/CreateListingsPage";
 
+import ListingsPage from "../modules/listings/pages/ListingsPage";
+import ListingPage from "../modules/listings/pages/ListingPage";
 
 export const router = 
     createBrowserRouter([
@@ -39,11 +41,24 @@ export const router =
         },
 
         {
-            element: <AppLayout/>,
+            element: <PublicRoute/>,
             children: [
                 {
-                    path: '/',
-                    element: <DashboardPage />
+                    element: <AppLayout />,
+                    children: [
+                        {
+                            path: '/',
+                            element: <DashboardPage />
+                        },
+                        {
+                            path: '/listings',
+                            element: <ListingsPage />
+                        },
+                        {
+                            path: '/listing/:listingId',
+                            element: <ListingPage />
+                        }
+                    ]
                 }
             ]
         },
