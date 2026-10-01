@@ -14,12 +14,12 @@ export default function PublicRoute() {
         )
     }
 
-    if(user){
-        return(
-            <Navigate to='/'
-            replace
-            />
-        )
+    if(!user){
+        return <Outlet/>
+    }
+
+    if(user.role === 'JOBPROVIDER'){
+        return <Navigate to="/companyDash" replace />
     }
 
     return <Outlet/>
