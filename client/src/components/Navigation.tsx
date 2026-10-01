@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import {Home, User, LogOut, ChevronDown} from 'lucide-react'
+import {Home, User, LogOut, ChevronDown, Building2} from 'lucide-react'
 
 import { useAuthStore } from "../stores/auth.store";
 
@@ -17,6 +17,11 @@ import { useAuthStore } from "../stores/auth.store";
             to: '/',
             label: 'Home',
             icon: Home
+        },
+        {
+            to: '/listings',
+            label: 'listings',
+            icon: Building2
         }
     ];
 
