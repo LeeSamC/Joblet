@@ -126,10 +126,17 @@ export default function ListingsPage() {
                                     <h2 className="text-xl font-bold text-gray-900">
                                         {listing.name}
                                     </h2>
+                                    
+                                    <p className="mt-1 text-xs text-gray-400">
+                                        Expires At: {listing.expiresAt ?? 'No expiration date'}
+                                    </p>
 
                                     <p className="mt-3 line-clamp-3 text-sm leading-6 text-gray-500">
                                         {listing.description}
                                     </p>
+
+                                    
+
                                 </div>
 
                                 <div className="mt-6 flex items-center justify-between border-t pt-5">
