@@ -78,7 +78,7 @@ export default function CompanyListingsPage() {
                         {data.companyListings.map((listing) => (
                             <div
                                 key={listing.listingId}
-                                className="rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md" 
+                                className=" flex flex-col rounded-2xl border bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md" 
                             >   
                                 <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-gray-100">
                                     <BriefcaseBusiness size={22} />
@@ -88,23 +88,24 @@ export default function CompanyListingsPage() {
                                     {listing.name}
                                 </h2>
 
+                                <p className="mt-1 text-xs text-gray-400">
+                                    Expires At: {listing.expiresAt ?? 'No expiration date'}
+                                </p>
+
                                 <p className="mt-3 line-clamp-4 text-sm leading-6 text-gray-500">
                                     {listing.description}
                                 </p>
 
-                                <div className="mt-6 flex items-center justify-between">
-                                    <span className="text-xs text-gray-400">
-                                        Job Listing
-                                    </span>
+                                <div className="mt-auto flex items-center gap-3 pt-4">
+                                    <button
+                                        type="button"
 
-                                    <Link
-                                        to={`/listing/${listing.listingId}`}
-                                        className="flex items-center gap-1 text-sm font-semibold hover:underline"
+                                        className="rounded-xl p-2 border bg-black text-white" 
                                     >
-                                        View
+                                       Disable 
+                                    </button>
 
-                                        <ArrowRight size={16} />
-                                    </Link>
+
                                 </div>
 
                             </div>
