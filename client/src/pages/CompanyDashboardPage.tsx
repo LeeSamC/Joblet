@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom'
 
-import { Building2, Users, ArrowRight} from 'lucide-react'
+import { Building2, Users, ArrowRight, BriefcaseBusiness} from 'lucide-react'
 
 import { useAuthStore } from '../stores/auth.store'
 
@@ -9,6 +9,8 @@ import {useGetUserCompany } from '../modules/companies/hooks/useCompanies'
 import { useGetCompanyListings } from '../modules/companies/hooks/useCompanies'
 
 import { useGetCompanyMembers, useGetRequest  } from '../modules/companies/hooks/useCompanies'
+
+import { useGetApplications } from '../modules/applications/hooks/useApplications'
 
 
 export default function CompanyDashboardPage(){
@@ -22,6 +24,8 @@ export default function CompanyDashboardPage(){
     const {data: members} = useGetCompanyMembers()
 
     const {data:request} = useGetRequest()
+
+    const {data: applications} = useGetApplications()
 
     const isOwner = userCompany?.company?.ownerId === user?.userId
 
@@ -133,7 +137,7 @@ export default function CompanyDashboardPage(){
                         </div>
                     </div>
 
-                    <div className='grid gap-6 md:grid-cols-3'>
+                    <div className='grid gap-6 md:grid-cols-4'>
                         <DashboardCard
                             title = 'Listings'
                             value = {listings?.companyListings.length ?? 0}
@@ -147,9 +151,15 @@ export default function CompanyDashboardPage(){
                         />
 
                         <DashboardCard
-                            title = 'Applications'
+                            title = 'Join Request'
                             value = {request?.requests.length ?? 0}
-                            description = 'Job applications' 
+                            description = 'Company join requests' 
+                        />
+
+                        <DashboardCard
+                            title='Job Applications'
+                            value= {applications?.applications.length ?? 0}
+                            description='Job Applications'
                         />
                     </div>
 
@@ -193,6 +203,25 @@ export default function CompanyDashboardPage(){
                             </div>
                         </Link>
 
+                        <Link
+                            to="/company/applications"
+                            className='rounded-xl border bg-white p-6 transition hover:-translate-y-1 hover:shadow-md'
+                        >
+                            <div className='flex items-center justify-between'>
+                                <div>
+                                    <h1 className='font-semibold'>
+                                        Job Applications
+                                    </h1>
+
+                                    <p className='mt-1 text-sm text-gray-500'>
+                                        Manage job applications
+                                    </p>
+                                </div>
+
+                                <BriefcaseBusiness size={20} />
+                            </div>
+                        </Link>
+
                     
 
                         {isOwner && (
@@ -203,7 +232,7 @@ export default function CompanyDashboardPage(){
                                 <div className='flex items-center justify-between'>
                                     <div>
                                         <h1 className='font-semibold'>
-                                            View Applicants
+                                            Join Request
                                         </h1>
 
                                         <p className='mt-1 text-sm text-gray-500'>
