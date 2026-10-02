@@ -6,6 +6,7 @@ import { listings } from '../../db/schema'
 import { companyMembers } from '../../db/schema'
 import { authenticateAccessToken , AuthenticateRequest} from '../../middleware/authenticateAccessToken'
 import {z} from 'zod'
+import { stat } from 'fs'
 
 
 
@@ -39,7 +40,22 @@ router.get('/', authenticateAccessToken,async (req: AuthenticateRequest, res) =>
             return res.status(404).json({message: 'You are not a company member'})
         }
 
-        const result = await db.select().from(applications).innerJoin(
+        const result = await db.select({
+            applicationId: applications.applicationId,
+            applicantId: applications.applicantId,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            username: users.username,
+            listingId: applications.listingId,
+            listingName: listings.name,
+            companyId: companies.companyId,
+            companyName: companies.name,
+            coverLetter: applications.coverLetter,
+            resume: applications.resume,
+            status: applications.status,
+            createdAt: applications.createdAt
+
+        }).from(applications).innerJoin(
                         listings,
                         eq(applications.listingId, listings.listingId)
                         )
@@ -47,11 +63,15 @@ router.get('/', authenticateAccessToken,async (req: AuthenticateRequest, res) =>
                             companies,
                             eq(listings.companyId, companies.companyId)
                         )
+                        .innerJoin(
+                            users,
+                            eq(applications.applicantId, users.userId)
+                        )
                         .where(
                             eq(companies.companyId, companyMember.companyId)
                         )
         if(result.length === 0){
-            return res.status(404).json({message: 'No applications found'})
+            return res.json({applications: []})
         }
 
         return res.status(200).json({applications: result})
