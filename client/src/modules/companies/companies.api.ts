@@ -14,6 +14,7 @@ type Listing = {
     name: string
     description: string
     createdAt: string
+    expiresAt: string | null
 }
 
 
