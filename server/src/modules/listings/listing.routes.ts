@@ -1,6 +1,6 @@
 import {Router} from 'express'
 import { db } from '../../db'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, isNull, or, gt } from 'drizzle-orm'
 
 import { companies, listings, companyMembers } from '../../db/schema'
 import { users } from '../../db/schema'
@@ -14,8 +14,20 @@ const router = Router()
 
 const listingSchema = z.object({
     name: z.string().min(3).max(30),
-    description: z.string().min(100).max(1000)
+    description: z.string().min(100).max(1000),
+    expiresAt: z.iso.datetime().nullable()
 })
+.refine(
+    (data) => {
+        if(!data.expiresAt) return true
+
+        return new Date(data.expiresAt) > new Date()
+    },
+    {
+        message: 'Expiration date must be in the future',
+        path: ["expiresAt"]
+    }
+)
 
 const editListingSchema = z.object({
     name: z.string().min(3).max(30),
@@ -24,16 +36,29 @@ const editListingSchema = z.object({
 
 router.get('/', async(req, res) => {
     try{
+        const now = new Date()
+
         const allListings = await db.select({
             listingId: listings.listingId,
             companyId: listings.companyId,
             companyName: companies.name,
             name: listings.name,
-            description: listings.description
+            description: listings.description,
+            expiresAt: listings.expiresAt,
+            createdAt: listings.createdAt,
         }).from(listings)
         .innerJoin(
             companies,
             eq(listings.companyId, companies.companyId)
+        )
+        .where(
+            and(
+                eq(listings.status, 'ACTIVE'),
+                or(
+                    isNull(listings.expiresAt),
+                    gt(listings.expiresAt, now)
+                )
+            )
         )
         
         if(allListings.length === 0){
@@ -50,6 +75,7 @@ router.get('/', async(req, res) => {
 
 router.get('/:id', async (req, res) => {
     try{
+        const now = new Date()
         const listingId = req.params.id as string
 
         const [listing] = await db.select({
@@ -58,6 +84,7 @@ router.get('/:id', async (req, res) => {
             companyName: companies.name,
             name: listings.name,
             description: listings.description,
+            expiresAt: listings.expiresAt,
             createdAt: listings.createdAt
 
         }).from(listings)
@@ -66,7 +93,15 @@ router.get('/:id', async (req, res) => {
                 eq(listings.companyId, companies.companyId)
             )
             .where(
-                eq(listings.listingId, listingId)
+                and(
+                    eq(listings.listingId, listingId),
+                    eq(listings.status, 'ACTIVE'),
+                    or(
+                        isNull(listings.expiresAt),
+                        gt(listings.expiresAt, now)
+                    )
+                )
+                
             )
 
         if(!listing) {
@@ -108,7 +143,10 @@ router.post('/', authenticateAccessToken, async (req: AuthenticateRequest, res) 
         const [newListing] = await db.insert(listings).values({
             companyId: companyMember.companyId,
             name: data.name,
-            description: data.description
+            description: data.description,
+            expiresAt: data.expiresAt
+                ? new Date(data.expiresAt)
+                : null
         }).returning()
 
         return res.status(201).json({listing: newListing})
@@ -181,25 +219,72 @@ router.patch('/:id/disable', authenticateAccessToken, async(req:AuthenticateRequ
 
         const listingId = req.params.id as string
 
-        const [result] = await db.update(listings).set({
-            status: 'DISABLED'
+        const [listing] = await db.update(listings).set({
+            status: 'DISABLED',
+            updatedAt: new Date()
         })
         .where(
             and(
                 eq(listings.listingId, listingId),
-                eq(listings.companyId, companyMember.companyId)
+                eq(listings.companyId, companyMember.companyId),
+                eq(listings.status, 'ACTIVE')
             )
         ).returning()
 
+        if(!listing){
+            return res.status(404).json({message: 'Listing not found'})
+        }
+
         return res.status(200).json({
             message: 'Successfully disabled listing',
-            listing: result
+            listing
         })
 
     }catch (error){
         console.error(error)
 
         return res.status(500).json({message: 'Failed to disable listing'})
+    }
+})
+
+router.patch('/:id/enable', authenticateAccessToken, async (req: AuthenticateRequest, res) => {
+    try{
+        if(!req.user){
+            return res.status(401).json({message: 'Authorization required'})
+        }
+
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, req.user.userId)})
+
+        if(!companyMember){
+            return res.status(403).json({message: 'Permission required'})
+        }
+
+        const listingId = req.params.id as string
+
+        const [listing] = await db.update(listings).set({
+            status: 'ACTIVE',
+            updatedAt: new Date()
+        })
+        .where(
+            and(
+                eq(listings.listingId, listingId),
+                eq(listings.status, 'DISABLED'),
+                eq(listings.companyId, companyMember.companyId)
+            )
+        ).returning()
+
+        if(!listing){
+            return res.status(404).json({message: 'Listing now found'})
+        }
+
+        return res.status(200).json({
+            message: 'Successfully set listing to active',
+            listing
+        })
+    }catch (error){
+        console.error(error)
+
+        return res.status(500).json({message: 'Failed to set listing to active'})
     }
 })
 
