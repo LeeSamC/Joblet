@@ -8,6 +8,8 @@ type ListingCardProps = {
 export default function ListingCard({listing}: ListingCardProps){
     const navigate = useNavigate()
 
+    console.log('EXPIRES AT:', listing.expiresAt)
+
     return (
         <article className=" flex flex-col rounded-xl border bg-white p-6 shadow-sm transition hover:translate-y-1 hover:shadow-md">
             <div>
@@ -17,6 +19,9 @@ export default function ListingCard({listing}: ListingCardProps){
 
                 <p className="mt-2 text-sm text-gray-900">
                     Company: {listing.companyName}
+                </p>
+                <p className="mt-1 text-xs text-gray-400">
+                    Expires at: {listing.expiresAt ?? 'No expiration date'}
                 </p>
             </div>
             
