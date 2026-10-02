@@ -7,11 +7,11 @@ import { BriefcaseBusiness } from 'lucide-react'
 export default function CreateListingsPage() {
     const navigate = useNavigate()
 
-    const addListing = useAddListing()
+    const {mutateAsync: addListing, isPending} = useAddListing()
 
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
-
+    const [expiresAt, setExpiresAt] = useState('')
     const [error, setError] = useState('')
 
     async function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>){
@@ -19,8 +19,8 @@ export default function CreateListingsPage() {
         setError('')
 
         try{
-            await addListing.mutateAsync({
-                name, description
+            await addListing({
+                name, description, expiresAt: expiresAt ? new Date(expiresAt).toISOString() :  null
             })
 
             navigate("/company/listings")
@@ -99,6 +99,23 @@ export default function CreateListingsPage() {
                         </p>
                     </div>
 
+                    <div>
+                        <label className='mb-2 block text-sm font-medium'>
+                            Expiration Date
+                        </label>
+
+                        <input
+                            type='datetime-local'
+                            value={expiresAt}
+                            onChange={(e) => setExpiresAt(e.target.value)}
+                            className='w-full rounded-lg border px-4 py-3 outline-none focus:ring-2' 
+                        /> 
+
+                        <p className='mt-2 text-sm text-gray-500'>
+                            The listing will automatically become inactive after this date
+                        </p>
+                    </div>
+
                     <div className='flex justify-end gap-3'>
                         <button
                             type="button"
@@ -110,10 +127,10 @@ export default function CreateListingsPage() {
 
                         <button
                             type='submit'
-                            disabled={addListing.isPending}
+                            disabled={isPending}
                             className='rounded-lg bg-black px-5 py-3 font-semibold text-white disabled:opacity-50'
                         >
-                            {addListing.isPending
+                            {isPending
                                 ? 'Creating...'
                                 : 'Create listing'
                             }
