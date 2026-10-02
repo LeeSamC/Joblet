@@ -3,7 +3,7 @@ import {users} from './users'
 import {companies} from './companies'
 import { pgEnum } from 'drizzle-orm/pg-core'
 
-const listingStatusEnum = pgEnum('listing_status', [
+export const listingStatusEnum = pgEnum('listing_status', [
     'ACTIVE',
     'EXPIRED',
     'DISABLED'
