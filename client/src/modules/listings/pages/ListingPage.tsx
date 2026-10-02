@@ -88,6 +88,10 @@ export default function ListingPage() {
                                 <h1 className="mt-1 text-3xl font-bold tracking-tight text-gray-900">
                                     {listing.name}
                                 </h1>
+
+                                <p className="mt-1 text-xs text-gray-400">
+                                    Expires At: {listing.expiresAt ?? 'No expiration date'}
+                                </p>
                             </div>
                         </div>
                         <span className="w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
