@@ -2,7 +2,7 @@ import {Router} from 'express'
 
 import { db } from '../../db'
 import { eq, and} from 'drizzle-orm'
-import { companies, companyMembers, companyJoinRequest, listings} from '../../db/schema'
+import { companies, companyMembers, companyJoinRequest, listings, applications} from '../../db/schema'
 import { users } from '../../db/schema'
 
 import { z} from 'zod'
@@ -146,6 +146,51 @@ router.get('/listings', authenticateAccessToken, async(req: AuthenticateRequest,
         console.error(error)
 
         return res.status(500).json({message: 'Failed to fetch company listings'})
+    }
+})
+
+router.get('/applications', authenticateAccessToken, async (req: AuthenticateRequest, res) => {
+    try{
+        if(!req.user){
+            return res.status(401).json({message: 'Authentication required'})
+        }
+
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, req.user.userId)})
+
+        if(!companyMember){
+            return res.status(403).json({message: 'No permission'})
+        }
+
+        const companyApplications = await db.select({
+            applicationId: applications.applicationId,
+            applicantId: applications.applicantId,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            username: users.username,
+            listingId: applications.listingId,
+            listingName: listings.name,
+            coverLetter: applications.coverLetter,
+            resume: applications.resume,
+            status: applications.status,
+            createdAt: applications.createdAt
+        }).from(applications)
+            .innerJoin(
+                users,
+                eq(applications.applicantId, users.userId)
+            )
+            .innerJoin(
+                listings,
+                eq(applications.listingId, listings.listingId)
+            )
+            .where(
+                eq(listings.companyId, companyMember.companyId)
+            )
+        
+        return res.status(200).json({companyApplications})
+    }catch (error){
+        console.error(error)
+
+        return res.status(500).json({message: 'Failed to fetch company applications'})
     }
 })
 
