@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
-import { getCompanies, getCompanyMembers, getUserCompany, addCompany, addRequest, getRequest, approveRequest, declineRequest, getCompanyListings } from '../companies.api'
+import { getCompanies, getCompanyMembers, getUserCompany, addCompany, addRequest, getRequest, approveRequest, declineRequest, getCompanyListings, getCompanyApplications } from '../companies.api'
 import { useAuthStore } from '../../../stores/auth.store'
 
 export const CompanyKeys = {
@@ -14,6 +14,9 @@ export const CompanyKeys = {
 
     listings: (companyId: string) =>
         [...CompanyKeys.all, 'listings', companyId] as const,
+
+    applications: (companyId: string) =>
+        [...CompanyKeys.all, 'applications', companyId] as const,
 
     userCompany: (userId: string) => 
         [...CompanyKeys.all, 'user', userId] as const,
@@ -41,6 +44,18 @@ export function useGetCompanyListings(){
     return useQuery({
         queryKey: CompanyKeys.listings(companyId ?? ''),
         queryFn: getCompanyListings,
+        enabled: !!user?.userId && !!companyId
+    })
+}
+
+export function useGetCompanyApplications(){
+    const user = useAuthStore(state => state.user)
+    const {data: userCompany} = useGetUserCompany()
+    const companyId = userCompany?.company?.companyId
+
+    return useQuery({
+        queryKey: CompanyKeys.applications(companyId ?? ''),
+        queryFn: getCompanyApplications,
         enabled: !!user?.userId && !!companyId
     })
 }
