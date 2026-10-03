@@ -17,6 +17,20 @@ type Listing = {
     expiresAt: string | null
 }
 
+type Application = {
+    applicationId: string
+    applicantId: string
+    firstName: string
+    lastName: string
+    username: string
+    listingId: string
+    listingName: string
+    coverLetter: string
+    resume: string
+    status: "PENDING" | "REVIEWING" | "APPROVED" | "REJECTED"
+    createdAt: string
+}
+
 
 type Member = {
     userId: string
@@ -93,6 +107,12 @@ export async function getCompanyListings(){
     return api<{
         companyListings: Listing[]
     }>('/company/listings')
+}
+
+export async function getCompanyApplications(){
+    return api<{
+        companyApplications: Application[]
+    }>('/company/applications')
 }
 
 export async function approveRequest(id: string, requestId: string){
