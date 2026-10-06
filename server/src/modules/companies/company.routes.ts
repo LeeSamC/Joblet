@@ -194,6 +194,61 @@ router.get('/applications', authenticateAccessToken, async (req: AuthenticateReq
     }
 })
 
+router.get('/:id/application', authenticateAccessToken, async(req:AuthenticateRequest, res) => {
+    try{
+        if(!req.user){
+            return res.status(401).json({message:'Authentication Required'})
+        }
+
+        const companyMember = await db.query.companyMembers.findFirst({where: eq(companyMembers.userId, req.user.userId)})
+
+        if(!companyMember){
+            return res.status(403).json({message: 'No permission'})
+        }
+
+        const applicationId = req.params.id as string
+
+        const companyApplication = await db.select({
+            applicationId: applications.applicationId,
+            applicantId: applications.applicantId,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            username: users.username,
+            listingId: applications.listingId,
+            listingName: listings.name,
+            coverLetter: applications.coverLetter,
+            resume: applications.resume,
+            status: applications.status,
+            createdAt: applications.createdAt
+        })
+        .from(applications)
+        .innerJoin(
+            users,
+            eq(applications.applicantId, users.userId)
+        )
+        .innerJoin(
+            listings,
+            eq(applications.listingId, listings.listingId)
+        )
+        .where(
+            and(
+                eq(applications.applicationId, applicationId),
+                eq(listings.companyId, companyMember.companyId)
+            )
+        )
+
+        if(!companyApplication){
+            return res.status(404).json({message:'Application not found'})
+        }
+
+        return res.status(200).json({companyApplication})
+    }catch (error){
+        console.error(error)
+
+        return res.status(500).json({message: 'Failed to fetch application info'})
+    }
+})
+
 router.post('/', authenticateAccessToken, async (req: AuthenticateRequest, res) => {
     try{
         if(!req.user){
