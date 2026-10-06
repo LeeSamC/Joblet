@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
 import { Search, Users, Clock3, CheckCircle2, XCircle, FileText } from "lucide-react";
 
-import { useGetApplications } from "../../applications/hooks/useApplications";
+import { useGetCompanyApplications } from "../hooks/useCompanies";
 
 import StatCard from "../cards/StatCard";
 import ApplicationCard from "../cards/ApplicationCard";
 
 export default function CompanyApplicationsPage() {
-    const {data, isLoading, isError} = useGetApplications()
+    const {data, isLoading, isError} = useGetCompanyApplications()
 
     const [search, setSearch] = useState('')
     const [statusFilter, setStatusFilter] = useState('ALL')
@@ -70,7 +70,7 @@ export default function CompanyApplicationsPage() {
         )
     }
 
-    const applications = data?.applications ?? []
+    const applications = data?.companyApplications ?? []
 
     const filterApplications = useMemo(() => {
         return applications.filter((application) => {
