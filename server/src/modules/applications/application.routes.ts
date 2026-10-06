@@ -1,12 +1,12 @@
 import {application, Router} from 'express'
 import { db } from '../../db'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, or, isNull, gt } from 'drizzle-orm'
 import { applications, companies, users } from '../../db/schema'
 import { listings } from '../../db/schema'
 import { companyMembers } from '../../db/schema'
 import { authenticateAccessToken , AuthenticateRequest} from '../../middleware/authenticateAccessToken'
 import {z} from 'zod'
-import { stat } from 'fs'
+
 
 
 
@@ -138,7 +138,17 @@ router.post('/:id/apply', authenticateAccessToken, async (req:AuthenticateReques
 
         const listingId = req.params.id as string
 
-        const listing = await db.query.listings.findFirst({where: eq(listings.listingId, listingId)})
+        const listing = await db.query.listings.findFirst({where: 
+            and(
+                eq(listings.listingId, listingId),
+                eq(listings.status, 'ACTIVE'),
+                or(
+                    isNull(listings.expiresAt),
+                    gt(listings.expiresAt, new Date(Date.now())),
+                )
+                
+            )
+        })
 
         if(!listing){
             return res.status(404).json({message: 'Listing not found'})
