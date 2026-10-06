@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 
 export default function ApplicationCard({
     application
@@ -17,6 +18,7 @@ export default function ApplicationCard({
         createdAt: string
     }
 }) {
+    const navigate = useNavigate()
     const fullName = `${application.firstName} ${application.lastName}`
 
     return (
@@ -72,6 +74,7 @@ export default function ApplicationCard({
 
                 <button
                     type="button"
+                    onClick={() => navigate(`/application/${application.applicantId}`)}
                     className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
                 >
                     View
