@@ -115,6 +115,12 @@ export async function getCompanyApplications(){
     }>('/company/applications')
 }
 
+export function getCompanyApplication(id: string) {
+    return api<{
+        companyApplication: Application
+    }>(`/${id}/application`)
+}
+
 export async function approveRequest(id: string, requestId: string){
     return api<{
         member: {
