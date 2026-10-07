@@ -10,7 +10,7 @@ import { useGetCompanyListings } from '../modules/companies/hooks/useCompanies'
 
 import { useGetCompanyMembers, useGetRequest  } from '../modules/companies/hooks/useCompanies'
 
-import { useGetApplications } from '../modules/applications/hooks/useApplications'
+import { useGetCompanyApplications } from '../modules/companies/hooks/useCompanies'
 
 
 export default function CompanyDashboardPage(){
@@ -25,7 +25,7 @@ export default function CompanyDashboardPage(){
 
     const {data:request} = useGetRequest()
 
-    const {data: applications} = useGetApplications()
+    const {data: applications} = useGetCompanyApplications()
 
     const isOwner = userCompany?.company?.ownerId === user?.userId
 
@@ -158,7 +158,7 @@ export default function CompanyDashboardPage(){
 
                         <DashboardCard
                             title='Job Applications'
-                            value= {applications?.applications.length ?? 0}
+                            value= {applications?.companyApplications.length ?? 0}
                             description='Job Applications'
                         />
                     </div>
