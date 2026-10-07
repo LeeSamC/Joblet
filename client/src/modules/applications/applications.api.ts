@@ -21,7 +21,7 @@ export function sendApplication(
 ){
     return api<{
         application: CreatedApplication
-    }>(`/${data.listingId}/apply`, {
+    }>(`/application/${data.listingId}/apply`, {
         method: 'POST',
         body: data
     })
