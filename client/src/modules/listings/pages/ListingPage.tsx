@@ -1,6 +1,7 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useListing } from "../hooks/useListing";
 import { BriefcaseBusiness, ArrowLeft, Building2, ArrowRight } from "lucide-react";
+import { useAuthStore } from "../../../stores/auth.store";
 
 
 
@@ -9,6 +10,7 @@ export default function ListingPage() {
     const navigate = useNavigate()
 
     const {data, isLoading, isError} = useListing(listingId!)
+    const user = useAuthStore(state => state.user)
 
     if(isLoading){
         return(
@@ -112,28 +114,31 @@ export default function ListingPage() {
                     </div>
                 </section>
 
-                <section className="mt-6 rounded-2xl border bg-white p-6 shadow-sm sm:p-8">
-                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 className="text-lg font-bold text-gray-900">
-                                Interested in this opportunity
-                            </h2>
+                {user && (
+                    <section className="mt-6 rounded-2xl border bg-white p-6 shadow-sm sm:p-8">
+                        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-900">
+                                    Interested in this opportunity
+                                </h2>
 
-                            <p className="mt-1 text-sm text-gray-500">
-                                Submit your application to {listing.companyName}
-                            </p>
+                                <p className="mt-1 text-sm text-gray-500">
+                                    Submit your application to {listing.companyName}
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={() => navigate(`/sendApplication/${listingId}`)}
+                                className="inline-flex items-center justify-centergap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+                            >
+                                Apply Now
+                                <ArrowRight className="h-4 w-4" />
+                            </button>
+
                         </div>
-
-                        <button
-                            type="button"
-                            className="inline-flex items-center justify-centergap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
-                        >
-                            Apply Now
-                            <ArrowRight className="h-4 w-4" />
-                        </button>
-
-                    </div>
-                </section>
+                    </section>
+                )}
             </div>
         </main>
     )
