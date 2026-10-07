@@ -18,9 +18,14 @@ import JoinRequestPage from "../modules/companies/pages/JoinRequestPage";
 import CompaniesPage from "../modules/companies/pages/CompaniesPage";
 import CompanyListingsPage from "../modules/companies/pages/CompanyListingsPage";
 import CreateListingsPage from "../modules/companies/pages/CreateListingsPage";
+import CompanyApplicationPage from "../modules/companies/pages/CompanyApplicationPage";
+import CompanyApplicationsPages from "../modules/companies/pages/CompanyApplicationsPage";
 
 import ListingsPage from "../modules/listings/pages/ListingsPage";
 import ListingPage from "../modules/listings/pages/ListingPage";
+import ProtectedRoute from "../components/ProtectedRoute";
+
+import SendApplicationPage from "../modules/applications/pages/SendApplicationPage";
 
 export const router = 
     createBrowserRouter([
@@ -64,6 +69,21 @@ export const router =
         },
 
         {
+            element: <ProtectedRoute/>,
+            children: [
+               {
+                element: <AppLayout/>,
+                children: [
+                     {
+                        path: '/sendApplication/:listingId',
+                        element: <SendApplicationPage />
+                    }
+                ]
+               }
+            ]
+        },
+
+        {
             element: <CompanyRoute />,
             children: [
                 {
@@ -97,6 +117,14 @@ export const router =
                         {
                             path: '/company/listings/create',
                             element: <CreateListingsPage/>
+                        },
+                        {
+                            path: '/company/applications',
+                            element: <CompanyApplicationsPages/>
+                        },
+                        {
+                            path: '/applications/:applicantId',
+                            element: <CompanyApplicationPage/>
                         }
                     ]
                 }
