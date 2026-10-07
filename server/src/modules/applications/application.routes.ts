@@ -14,7 +14,7 @@ const router = Router()
 
 const applicationSchema = z.object({
     coverLetter: z.string().min(100).max(1000),
-    resume: z.string().min(100).max(100)
+    resume: z.string().min(100).max(1000)
 })
 
 router.get('/', authenticateAccessToken,async (req: AuthenticateRequest, res) => {
