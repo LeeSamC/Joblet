@@ -12,6 +12,38 @@ export default function CompanyApplicationsPage() {
     const [search, setSearch] = useState('')
     const [statusFilter, setStatusFilter] = useState('ALL')
 
+    const applications = data?.companyApplications ?? []
+
+    const filterApplications = useMemo(() => {
+        return applications.filter((application) => {
+            const searchTerm = search.toLowerCase()
+
+            const matchesSearch = 
+                application.firstName.toLowerCase().includes(searchTerm) ||
+                application.lastName.toLowerCase().includes(searchTerm) ||
+                application.username.toLowerCase().includes(searchTerm) ||
+                application.listingName.toLowerCase().includes(searchTerm)
+
+            const matchesStatus = 
+                statusFilter === 'ALL' ||
+                application.status === statusFilter
+
+            return matchesSearch && matchesStatus
+        })
+    }, [applications, search, statusFilter])
+
+    const pendingCount = applications.filter(
+        (application) => application.status === 'PENDING'
+    ).length
+
+    const approvedCount = applications.filter(
+        (application) => application.status === 'APPROVED'
+    ).length
+
+    const rejectedCount = applications.filter(
+        (application) => application.status === "REJECTED"
+    ).length
+
     if(isLoading){
 
         return(
@@ -69,38 +101,7 @@ export default function CompanyApplicationsPage() {
             </main>
         )
     }
-
-    const applications = data?.companyApplications ?? []
-
-    const filterApplications = useMemo(() => {
-        return applications.filter((application) => {
-            const searchTerm = search.toLowerCase()
-
-            const matchesSearch = 
-                application.firstName.toLowerCase().includes(searchTerm) ||
-                application.lastName.toLowerCase().includes(searchTerm) ||
-                application.username.toLowerCase().includes(searchTerm) ||
-                application.listingName.toLowerCase().includes(searchTerm)
-
-            const matchesStatus = 
-                statusFilter === 'ALL' ||
-                application.status === statusFilter
-
-            return matchesSearch && matchesStatus
-        })
-    }, [applications, search, statusFilter])
-
-    const pendingCount = applications.filter(
-        (application) => application.status === 'PENDING'
-    ).length
-
-    const approvedCount = applications.filter(
-        (application) => application.status === 'APPROVED'
-    ).length
-
-    const rejectedCount = applications.filter(
-        (application) => application.status === "REJECTED"
-    ).length
+    
 
     return(
         <main className="min-h-screen bg-green-50 px-6 py-8">
