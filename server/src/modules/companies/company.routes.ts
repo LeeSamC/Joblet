@@ -208,7 +208,7 @@ router.get('/:id/application', authenticateAccessToken, async(req:AuthenticateRe
 
         const applicationId = req.params.id as string
 
-        const companyApplication = await db.select({
+        const [companyApplication] = await db.select({
             applicationId: applications.applicationId,
             applicantId: applications.applicantId,
             firstName: users.firstName,
@@ -235,7 +235,7 @@ router.get('/:id/application', authenticateAccessToken, async(req:AuthenticateRe
                 eq(applications.applicationId, applicationId),
                 eq(listings.companyId, companyMember.companyId)
             )
-        )
+        ).limit(1)
 
         if(!companyApplication){
             return res.status(404).json({message:'Application not found'})
