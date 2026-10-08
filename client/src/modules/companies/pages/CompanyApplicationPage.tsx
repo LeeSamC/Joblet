@@ -1,10 +1,11 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useGetCompanyApplication } from "../hooks/useCompanies";
+import { useApproveApplication, useGetCompanyApplication, useRejectApplication } from "../hooks/useCompanies";
 import { ArrowLeft, Briefcase, Building2 } from "lucide-react";
 
 export default function CompanyApplicationPage() {
     const {applicationId} = useParams()
-
+    const approveApplication = useApproveApplication()
+    const rejectApplications = useRejectApplication()
     const navigate = useNavigate( )
 
     const {data, isLoading, isError} = useGetCompanyApplication(applicationId!)
@@ -39,16 +40,16 @@ export default function CompanyApplicationPage() {
                     <Briefcase className="mx-auto h-10 w-10 text-gray-300" />
 
                     <h1 className="mt-4 text-xl font-bold text-gray-900">
-                        Listing not found
+                        Application not found
                     </h1>
 
                     <p className="mt-2 text-sm text-gray-500">
-                        This applicaiton may no longer exist
+                        This application may no longer exist
                     </p>
 
                     <button
                         type="button"
-                        onClick={() => navigate('/applications')}
+                        onClick={() => navigate('/company/applications')}
                         className="mt-6 rounded-lg bg-black px-5 py-2.5 text-sm font-semibold text-white hover:bg-gray-800"
                     >
                         Back to applications
@@ -58,12 +59,26 @@ export default function CompanyApplicationPage() {
         )
     }
     const application = data.companyApplication
+
+    const handleApprove = () => {
+        if(!applicationId) return
+
+        approveApplication.mutate({applicationId})
+        navigate('/company/applications')
+    }
+
+    const handleReject = () => {
+        if(!applicationId) return
+
+        rejectApplications.mutate({applicationId})
+        navigate('/company/applications')
+    }
     
     return (
         <main className="min-h-screen bg-gray-50 px-6 py-10">
             <div className="mx-auto max-w-5xl">
                 <Link
-                    to="/applications"
+                    to="/company/applications"
                     className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-gray-900"
                 >
                     <ArrowLeft className="h-4 w-4" />
@@ -91,9 +106,40 @@ export default function CompanyApplicationPage() {
                                 </p>
                             </div>
                         </div>
-                        <span className="w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
-                            Sent At: {application.createdAt}
-                        </span>
+                    
+                        <div className="flex flex-col gap-2">
+                            <span className="w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-black">
+                                {application.status}
+                            </span>
+                            <span className="w-fit rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600">
+                                Sent At: {application.createdAt}
+                            </span>
+                            {application.status === 'PENDING' && (
+                                <div className="flex justify-end gap-4">
+                                    <button
+                                        type="button"
+                                        onClick={handleApprove}
+                                        disabled ={approveApplication.isPending || rejectApplications.isPending}
+                                        className="inline-flex items-center justify-between gap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+                                    >
+                                        Approve
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleReject}
+                                        disabled = {approveApplication.isPending || rejectApplications.isPending}
+                                        className="inline-flex items-center justify-between gap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+                            )}
+                        
+
+                        </div>
+
+                        
                     </div>
 
                     <div className="my-8 border-t" />
@@ -107,32 +153,14 @@ export default function CompanyApplicationPage() {
                             {application.coverLetter}
                         </p>
                     </div>
-
+                    <div className="my-8 border-t" />
                     <div>
-                        <h2 className="text-xl font-bild text-gray-900">
+                        <h2 className="text-xl font-bold text-gray-900">
                             Resume
                         </h2>
                         <p className="mt-4 whitespace-pre-line text-base leading-7 text-gray-600">
                             {application.resume}
                         </p>
-                    </div>
-                </section>
-
-                <section className="mt-6 rounded-2xl border bg-white p-6 shadow-sm sm:p-8">
-                    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                        <button
-                            type="button"
-                            className="inline-flex items-center justify-between gap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
-                        >
-                            Approve
-                        </button>
-
-                        <button
-                            type="button"
-                            className="inline-flex items-center justify-between gap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
-                        >
-                            Reject
-                        </button>
                     </div>
                 </section>
             </div>
