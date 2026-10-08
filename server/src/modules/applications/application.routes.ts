@@ -298,7 +298,7 @@ router.patch('/:id/approve', authenticateAccessToken, async (req:AuthenticateReq
                 and(
                     eq(companies.companyId, companyMember.companyId),
                     eq(applications.applicationId, applicationId),
-                    eq(applications.status, 'REVIEWING')
+                    eq(applications.status, 'PENDING')
                 )
             )
         
@@ -321,7 +321,7 @@ router.patch('/:id/approve', authenticateAccessToken, async (req:AuthenticateReq
 })
 
 
-router.patch('/:id/rejected', authenticateAccessToken, async (req:AuthenticateRequest, res) => {
+router.patch('/:id/reject', authenticateAccessToken, async (req:AuthenticateRequest, res) => {
     try{
         if(!req.user){
             return res.status(401).json({message: 'Authentication Required'})
@@ -359,7 +359,7 @@ router.patch('/:id/rejected', authenticateAccessToken, async (req:AuthenticateRe
                 and(
                     eq(applications.applicationId, applicationId),
                     eq(companies.companyId, companyMember.companyId),
-                    eq(applications.status, 'REVIEWING')
+                    eq(applications.status, 'PENDING')
                 )
             )
         
