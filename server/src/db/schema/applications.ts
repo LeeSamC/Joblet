@@ -5,7 +5,6 @@ import {listings} from './listings'
 
 export const applicationStatusEnum = pgEnum('application_status_enum', [
     'PENDING',
-    'REVIEWING',
     'APPROVED',
     'REJECTED',
 
