@@ -74,7 +74,7 @@ export default function ApplicationCard({
 
                 <button
                     type="button"
-                    onClick={() => navigate(`/application/${application.applicantId}`)}
+                    onClick={() => navigate(`/application/${application.applicationId}`)}
                     className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
                 >
                     View
