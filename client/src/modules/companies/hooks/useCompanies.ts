@@ -1,6 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
-import { getCompanies, getCompanyMembers, getUserCompany, addCompany, addRequest, getRequest, approveRequest, declineRequest, getCompanyListings, getCompanyApplications, getCompanyApplication } from '../companies.api'
+import { getCompanies, getCompanyMembers, getUserCompany, addCompany, addRequest, getRequest, approveRequest, declineRequest, getCompanyListings, getCompanyApplications, getCompanyApplication, approveApplication, rejectApplication } from '../companies.api'
 import { useAuthStore } from '../../../stores/auth.store'
 
 export const CompanyKeys = {
@@ -184,6 +184,58 @@ export function useDeclineRequest() {
         onSuccess: (_, variables) => {
             queryClient.invalidateQueries({
                 queryKey: CompanyKeys.requests(variables.companyId)
+            })
+        }
+    })
+}
+
+export function useApproveApplication() {
+    const queryClient = useQueryClient()
+
+    const {data: userCompany} = useGetUserCompany()
+    const companyId = userCompany?.company?.companyId as string
+
+    return useMutation({
+        mutationFn: ({
+            applicationId
+        }: {
+            applicationId: string
+        }) => approveApplication(applicationId),
+
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: CompanyKeys.applications(companyId)
+            })
+
+            queryClient.invalidateQueries({
+                queryKey: CompanyKeys.application(companyId, variables.applicationId)
+            })
+        }
+
+    
+    })
+
+}
+
+export function useRejectApplication() {
+    const queryClient = useQueryClient()
+    const {data: userCompany} = useGetUserCompany()
+    const comnpanyId = userCompany?.company?.companyId as string
+
+    return useMutation({
+        mutationFn: ({
+            applicationId
+        }:{ 
+            applicationId: string
+        }) => rejectApplication(applicationId),
+
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: CompanyKeys.applications(comnpanyId)
+            })
+
+            queryClient.invalidateQueries({
+                queryKey: CompanyKeys.application(comnpanyId, variables.applicationId)
             })
         }
     })
