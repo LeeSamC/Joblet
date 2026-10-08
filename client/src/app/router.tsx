@@ -19,7 +19,7 @@ import CompaniesPage from "../modules/companies/pages/CompaniesPage";
 import CompanyListingsPage from "../modules/companies/pages/CompanyListingsPage";
 import CreateListingsPage from "../modules/companies/pages/CreateListingsPage";
 import CompanyApplicationPage from "../modules/companies/pages/CompanyApplicationPage";
-import CompanyApplicationsPages from "../modules/companies/pages/CompanyApplicationsPage";
+import CompanyApplicationsPage from "../modules/companies/pages/CompanyApplicationsPage";
 
 import ListingsPage from "../modules/listings/pages/ListingsPage";
 import ListingPage from "../modules/listings/pages/ListingPage";
@@ -120,10 +120,10 @@ export const router =
                         },
                         {
                             path: '/company/applications',
-                            element: <CompanyApplicationsPages/>
+                            element: <CompanyApplicationsPage/>
                         },
                         {
-                            path: '/applications/:applicantId',
+                            path: '/application/:applicationId',
                             element: <CompanyApplicationPage/>
                         }
                     ]
