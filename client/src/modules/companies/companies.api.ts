@@ -27,7 +27,7 @@ type Application = {
     listingName: string
     coverLetter: string
     resume: string
-    status: "PENDING" | "REVIEWING" | "APPROVED" | "REJECTED"
+    status: "PENDING" | "APPROVED" | "REJECTED"
     createdAt: string
 }
 
@@ -118,7 +118,7 @@ export async function getCompanyApplications(){
 export function getCompanyApplication(id: string) {
     return api<{
         companyApplication: Application
-    }>(`/${id}/application`)
+    }>(`/company/${id}/application`)
 }
 
 export async function approveRequest(id: string, requestId: string){
@@ -138,6 +138,22 @@ export async function declineRequest(id: string, requestId: string){
         result: Request
     }>(`/company/${id}/joinRequest/${requestId}/decline`, {
         method: 'POST'
+    })
+}
+
+export async function approveApplication(id: string){
+    return api<{
+        approvedApplication: Application
+    }>(`/application/${id}/approve`, {
+        method: 'PATCH'
+    })
+}
+
+export async function rejectApplication(id: string){
+    return api<{
+        rejectedApplication: Application
+    }>(`/application/${id}/reject`, {
+        method: 'PATCH'
     })
 }
 
