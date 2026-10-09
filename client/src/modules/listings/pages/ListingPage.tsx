@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useListing } from "../hooks/useListing";
+import { useGetListingApplicationStatus, useListing } from "../hooks/useListing";
 import { BriefcaseBusiness, ArrowLeft, Building2, ArrowRight } from "lucide-react";
 import { useAuthStore } from "../../../stores/auth.store";
 
@@ -8,7 +8,7 @@ import { useAuthStore } from "../../../stores/auth.store";
 export default function ListingPage() {
     const {listingId} = useParams()
     const navigate = useNavigate()
-
+    const {data: applicationStatus, isLoading: isCheckingApplication} = useGetListingApplicationStatus(listingId!)
     const {data, isLoading, isError} = useListing(listingId!)
     const user = useAuthStore(state => state.user)
 
@@ -115,29 +115,46 @@ export default function ListingPage() {
                 </section>
 
                 {user && (
-                    <section className="mt-6 rounded-2xl border bg-white p-6 shadow-sm sm:p-8">
-                        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <h2 className="text-lg font-bold text-gray-900">
-                                    Interested in this opportunity
-                                </h2>
-
-                                <p className="mt-1 text-sm text-gray-500">
-                                    Submit your application to {listing.companyName}
-                                </p>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={() => navigate(`/sendApplication/${listingId}`)}
-                                className="inline-flex items-center justify-centergap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
-                            >
-                                Apply Now
-                                <ArrowRight className="h-4 w-4" />
+                    <>
+                        {isCheckingApplication ? (
+                            <button disabled>
+                                Checking Application...
                             </button>
+                        ): applicationStatus?.hasApplied ? (
+                            <div className="rounded-lg bg-green-50 px-4 py-3 text-green-700">
+                                ✓ Already applied
+                                {applicationStatus?.status && (
+                                    <p className="mt-1 text-sm">
+                                        Status: {applicationStatus.status}
+                                    </p>
+                                )}
+                            </div>
+                        ): (
+                            <section className="mt-6 rounded-2xl border bg-white p-6 shadow-sm sm:p-8">
+                                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <h2 className="text-lg font-bold text-gray-900">
+                                            Interested in this opportunity
+                                        </h2>
 
-                        </div>
-                    </section>
+                                        <p className="mt-1 text-sm text-gray-500">
+                                            Submit your application to {listing.companyName}
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate(`/sendApplication/${listingId}`)}
+                                        className="inline-flex items-center justify-centergap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-800"
+                                    >
+                                        Apply Now
+                                        <ArrowRight className="h-4 w-4" />
+                                    </button>
+
+                                </div>
+                            </section>
+                        )}
+                    </>
                 )}
             </div>
         </main>
