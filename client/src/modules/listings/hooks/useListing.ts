@@ -1,6 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
-import { getListings, getListing, addListing } from '../listings.api'
+import { getListings, getListing, addListing, getListingApplicationStatus } from '../listings.api'
+import { useAuthStore } from '../../../stores/auth.store'
 
 export const ListingKeys = {
     all: ['listings'] as const,
@@ -43,3 +44,13 @@ export function useAddListing(){
         }
     })
 }
+
+export function useGetListingApplicationStatus(listingId: string) {
+    const user = useAuthStore(state => state.user)
+    return useQuery({
+        queryKey: ['application-status', user?.userId, listingId],
+        queryFn: () => getListingApplicationStatus(listingId),
+        enabled: !!user?.userId && !!listingId
+    })
+}
+
