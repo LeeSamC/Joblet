@@ -2,6 +2,8 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query'
 
 import { getCompanies, getCompanyMembers, getUserCompany, addCompany, addRequest, getRequest, approveRequest, declineRequest, getCompanyListings, getCompanyApplications, getCompanyApplication, approveApplication, rejectApplication } from '../companies.api'
 import { useAuthStore } from '../../../stores/auth.store'
+import { disableListing, editListing, enableListing } from '../../listings/listings.api'
+import { ListingKeys } from '../../listings/hooks/useListing'
 
 export const CompanyKeys = {
     all: ['company'] as const,
@@ -48,6 +50,39 @@ export function useGetCompanyListings(){
         queryKey: CompanyKeys.listings(companyId ?? ''),
         queryFn: getCompanyListings,
         enabled: !!user?.userId && !!companyId
+    })
+}
+
+export function useEditCompanyListing(){
+    const queryClient = useQueryClient()
+    const {data: userCompany} = useGetUserCompany()
+    const companyId = userCompany?.company?.companyId
+
+    return useMutation({
+        mutationFn: ({
+            listingId,
+            data
+        }:{
+            listingId: string
+            data: {
+                name: string
+                description: string
+                expiresAt: string | null
+            }
+        }) => editListing(data, listingId),
+
+        onSuccess: async () => {
+            if(companyId){
+                await queryClient.invalidateQueries({
+                    queryKey: CompanyKeys.listings(companyId)
+                })
+            }
+
+            await queryClient.invalidateQueries({
+                queryKey: ListingKeys.lists()
+            })
+            
+        }
     })
 }
 
@@ -239,4 +274,57 @@ export function useRejectApplication() {
             })
         }
     })
+}
+
+export function useDisableListing(){
+    const queryClient = useQueryClient()
+    const {data: userCompany} = useGetUserCompany()
+    const companyId = userCompany?.company?.companyId
+
+    return useMutation({
+        mutationFn: ({
+            listingId
+        }:{
+            listingId: string
+        }) => disableListing(listingId),
+
+        onSuccess: async () => {
+            if(companyId) {
+                await queryClient.invalidateQueries({
+                    queryKey: CompanyKeys.listings(companyId)
+                })
+            }
+
+            await queryClient.invalidateQueries({
+                queryKey: ListingKeys.lists()
+            })
+        }
+    })
+    
+}
+
+export function useEnableListing() {
+    const queryClient = useQueryClient()
+    const {data: userCompany} = useGetUserCompany()
+    const companyId = userCompany?.company?.companyId 
+
+    return useMutation({
+        mutationFn: ({
+            listingId
+        }:{
+            listingId: string
+        }) => enableListing(listingId),
+
+        onSuccess: async () => {
+            if(companyId){
+                await queryClient.invalidateQueries({
+                    queryKey: CompanyKeys.listings(companyId)
+                })
+            }
+
+            await queryClient.invalidateQueries({
+                queryKey: ListingKeys.lists()
+            })
+        }
+    }) 
 }
