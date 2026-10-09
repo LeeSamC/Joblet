@@ -1,8 +1,8 @@
-import {Router} from 'express'
+import {application, Router} from 'express'
 import { db } from '../../db'
 import { eq, and, isNull, or, gt } from 'drizzle-orm'
 
-import { companies, listings, companyMembers } from '../../db/schema'
+import { companies, listings, companyMembers, applications} from '../../db/schema'
 import { users } from '../../db/schema'
 
 import {z} from 'zod'
@@ -113,6 +113,33 @@ router.get('/:id', async (req, res) => {
         console.error(error)
 
         return res.status(500).json({message: 'Failed to fetch listing'})
+    }
+})
+
+router.get('/:id/status', authenticateAccessToken, async (req:AuthenticateRequest, res) => {
+    try{
+        if(!req.user){
+            return res.status(401).json({message:'Authorization required'})
+        }
+
+        const listingId = req.params.id as string
+
+        const application = await db.query.applications.findFirst({where: 
+            and(
+                eq(applications.listingId, listingId),
+                eq(applications.applicantId, req.user.userId)
+            )
+        })
+
+        return res.status(200).json({
+            hasApplied: Boolean(application),
+            status: application?.status ?? null
+        })
+
+    }catch (error){
+        console.error(error)
+
+        return res.status(500).json({message: ' Failed to get application status'})
     }
 })
 
