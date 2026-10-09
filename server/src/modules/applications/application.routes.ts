@@ -243,7 +243,7 @@ router.patch('/:id/review', authenticateAccessToken, async (req:AuthenticateRequ
         }
 
         const [reviewingApplication] = await db.update(applications).set({
-            status: 'REVIEWING'
+            status: 'PENDING'
         }) 
         .where(
             eq(applications.applicationId, application.applications.applicationId)
