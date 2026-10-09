@@ -47,7 +47,7 @@ export async function editListing(
 ){
     return api<{
         listing: listingType
-    }>(`/${id}/edit`, {
+    }>(`/listing/${id}/edit`, {
         method: 'PATCH',
         body: data
     })
@@ -56,7 +56,7 @@ export async function editListing(
 export async function disableListing(id: string){
     return api<{
         listing: listingType
-    }>(`/${id}/disable`, {
+    }>(`/listing/${id}/disable`, {
         method: 'PATCH'
     })
 }
@@ -64,7 +64,14 @@ export async function disableListing(id: string){
 export async function enableListing(id: string){
     return api<{
         listing: listingType
-    }>(`/${id}/enable`,{
+    }>(`/listing/${id}/enable`,{
         method: 'PATCH'
     })
+}
+
+export async function getListingApplicationStatus(id: string){
+    return api<{
+        hasApplied: boolean
+        status: string | null
+    }>(`/listing/${id}/status`)
 }
