@@ -13,6 +13,7 @@ type Listing = {
     companyId: string
     name: string
     description: string
+    status: 'ACTIVE' | 'EXPIRED' | 'DISABLED'
     createdAt: string
     expiresAt: string | null
 }
