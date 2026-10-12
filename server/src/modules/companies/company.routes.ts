@@ -8,6 +8,7 @@ import { users } from '../../db/schema'
 import { z} from 'zod'
 
 import { AuthenticateRequest, authenticateAccessToken } from '../../middleware/authenticateAccessToken'
+import { createNotification } from '../notifications/notification.create'
 
 const router = Router()
 
@@ -345,6 +346,14 @@ router.post('/:id/request', authenticateAccessToken, async(req: AuthenticateRequ
             userId: user.userId,
             companyId: companyId
         }).returning()
+
+        await createNotification({
+            recipientId: company.ownerId,
+            actorId: user.userId,
+            type: 'JOIN_REQUEST_RECEIVED',
+            applicationId: null,
+            requestId: request.requestId
+        })
 
         return res.status(201).json({request})
     }catch (error) {
