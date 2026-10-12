@@ -6,6 +6,7 @@ import { listings } from '../../db/schema'
 import { companyMembers } from '../../db/schema'
 import { authenticateAccessToken , AuthenticateRequest} from '../../middleware/authenticateAccessToken'
 import {z} from 'zod'
+import { createNotification } from '../notifications/notification.create'
 
 
 
@@ -185,6 +186,22 @@ router.post('/:id/apply', authenticateAccessToken, async (req:AuthenticateReques
             status: 'PENDING'
         }).returning()
 
+        const companyMemberList = await db.query.companyMembers.findMany({
+            where:eq(companyMembers.companyId, listing.companyId)
+        })
+
+        await Promise.all(
+            companyMemberList.map(member =>
+                createNotification({
+                    recipientId: member.userId,
+                    actorId: user.userId,
+                    type: 'APPLICATION_RECEIVED',
+                    applicationId: application.applicationId,
+                    requestId: null
+                })
+            )
+        )
+
         return res.status(201).json({application})
 
     }catch (error){
@@ -306,9 +323,18 @@ router.patch('/:id/approve', authenticateAccessToken, async (req:AuthenticateReq
             return res.status(404).json({message:'Application not found'})
         }
 
+
         const [approvedApplication] = await db.update(applications).set({
             status: 'APPROVED'
         }).where(eq(applications.applicationId, application.applications.applicationId)).returning()
+
+        await createNotification({
+            recipientId: application.applications.applicantId,
+            actorId: user.userId,
+            type: 'APPLICATION_APPROVED',
+            applicationId: application.applications.applicationId,
+            requestId: null
+        })
 
         return res.status(200).json({approvedApplication})
     }catch (error){
@@ -364,14 +390,22 @@ router.patch('/:id/reject', authenticateAccessToken, async (req:AuthenticateRequ
             )
         
         if(!application){
-            return res.status(200).json({message: 'Application not found'})
+            return res.status(404).json({message: 'Application not found'})
         }
 
         const [rejectedApplication] = await db.update(applications).set({
             status: 'REJECTED'
         }).where(eq(applications.applicationId, application.applications.applicationId)).returning()
 
-        return res.status(404).json({rejectedApplication})
+        await createNotification({
+            recipientId: application.applications.applicantId,
+            actorId: user.userId,
+            type: 'APPLICATION_REJECTED',
+            applicationId: application.applications.applicationId,
+            requestId: null
+        })
+
+        return res.status(200).json({rejectedApplication})
     }catch (error){
         console.error(error)
 
