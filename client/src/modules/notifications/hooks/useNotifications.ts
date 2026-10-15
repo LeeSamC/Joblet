@@ -33,12 +33,16 @@ export function useGetApplicationRequest(){
 
 export function useGetJoinRequest() {
     const user = useAuthStore(state => state.user)
-    const userId = user?.userId
+    const {data: userCompany, isLoading} = useGetUserCompany()
+
+    const company = userCompany?.company
+    const isOwner = !!user?.userId &&
+        company?.ownerId === user.userId
 
     return useQuery({
-        queryKey: NotificationKeys.joinRequest(userId ?? ''),
+        queryKey: NotificationKeys.joinRequest(user?.userId ?? ''),
         queryFn: getJoinRequest,
-        enabled: !!user?.userId && !!userId
+        enabled: !!user?.userId && !isLoading && isOwner
     })
 }
 
