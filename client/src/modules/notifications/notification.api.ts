@@ -3,7 +3,7 @@ import { api } from "../../libs/api";
 type ApplicationRequestNotification = {
     notificationId: string
     type: string
-    isRead: boolean
+    isRead: string
     createdAt: string
     listingName: string
     actor: {
@@ -18,7 +18,7 @@ type ApplicationRequestNotification = {
 type CompanyJoinRequest = {
     notificationId: string
     type: string
-    isRead: boolean
+    isRead: string
     createdAt: string
     actor: {
         userId: string
@@ -32,7 +32,7 @@ type CompanyJoinRequest = {
 type ApplicationStatusNotification = {
     notificationId: string
     type: string
-    isRead: boolean
+    isRead: string
     createdAt: string
     listingName: string
     actor: {
