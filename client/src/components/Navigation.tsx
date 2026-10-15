@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {Home, User, LogOut, ChevronDown, Building2} from 'lucide-react'
-
+import NotificationBell from "../modules/notifications/components/NotificationBell";
 import { useAuthStore } from "../stores/auth.store";
 
     export default function Navigation(){
@@ -60,7 +60,7 @@ import { useAuthStore } from "../stores/auth.store";
                     })}
                 </div>
 
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-3">
                     {!user ? (
                         <div className="flex items-center gap-3">
                             <NavLink
@@ -78,49 +78,55 @@ import { useAuthStore } from "../stores/auth.store";
                             </NavLink>
                         </div>
                     ): (
-                        <div className="relative">
-                            <button
-                                type="button"
-                                onClick={() => setIsOpen(!isOpen)}
-                                className="flex items-center gap-2 rounded-full p-1 hover:bg-gray-100"
-                            >
-                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
-                                    {avatarLetter}
-                                </div>
+                        <>
+                            <NotificationBell/>
+                            <div className="relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsOpen(!isOpen)}
+                                    className="flex items-center gap-2 rounded-full p-1 hover:bg-gray-100"
+                                >
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
+                                        {avatarLetter}
+                                    </div>
 
-                                <ChevronDown
-                                    size={16}
-                                    className={`transition-transform ${
-                                        isOpen ? "rotate-180" : ""
-                                    }`}
-                                />
-                            </button>
+                                    <ChevronDown
+                                        size={16}
+                                        className={`transition-transform ${
+                                            isOpen ? "rotate-180" : ""
+                                        }`}
+                                    />
+                                </button>
 
-                            {isOpen && (
-                                <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-white py-2 shadow-lg">
-                                    <NavLink
-                                        to="/profile"
-                                        onClick={() => setIsOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                        <User size={18} />
-                                        Profile
-                                        
-                                    </NavLink>
+                                {isOpen && (
+                                    <div className="absolute right-0 mt-2 w-48 rounded-lg border bg-white py-2 shadow-lg">
+                                        <NavLink
+                                            to="/profile"
+                                            onClick={() => setIsOpen(false)}
+                                            className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                            <User size={18} />
+                                            Profile
+                                            
+                                        </NavLink>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => {setIsOpen(false); logout();}}
-                                        className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
-                                    >
-                                        <LogOut size={18} />
-                                        Logout
+                                        <button
+                                            type="button"
+                                            onClick={() => {setIsOpen(false); logout();}}
+                                            className="flex w-full items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-100"
+                                        >
+                                            <LogOut size={18} />
+                                            Logout
 
-                                    </button>
+                                        </button>
 
-                                </div>
-                            )}
-                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+
+
+                        
                     )}
                 </div>
 
