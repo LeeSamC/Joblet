@@ -161,13 +161,14 @@ router.get('/applicationStatus', authenticateAccessToken, async (req: Authentica
             eq(notifications.applicationId, applications.applicationId)
         )
         .innerJoin(
-            companies,
-            eq(listings.companyId, companies.companyId)
-        )
-        .innerJoin(
             listings,
             eq(applications.listingId, listings.listingId)
         )
+        .innerJoin(
+            companies,
+            eq(listings.companyId, companies.companyId)
+        )
+        
         .where(
             eq(notifications.recipientId, req.user.userId)
         )
