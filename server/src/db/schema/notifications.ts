@@ -3,7 +3,7 @@ import { users } from './users'
 import { applications } from './applications'
 import { companyJoinRequest } from './company-join-request'
 
-export const notifications = pgTable('notification', {
+export const notifications = pgTable('notifications', {
     notificationId: uuid('notification_id').defaultRandom().notNull(),
     recipientId: uuid('recipient_id').notNull().references(() => users.userId, {onDelete: 'cascade'}),
     actorId: uuid('actor_id').notNull().references(() => users.userId, {onDelete: 'cascade'}),
